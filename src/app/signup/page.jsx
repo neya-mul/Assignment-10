@@ -6,9 +6,11 @@ import { FiUser, FiMail, FiLock, FiCamera, FiChevronDown } from 'react-icons/fi'
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { uploadToImgBB } from '@/lib/iamgeUpload/imageUpload';
+import { useRouter } from 'next/navigation';
 // import { uploadToImgBB } from '@/lib/imageUploadFunction/image';
 
 export default function SignupPage() {
+  const router = useRouter()
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
@@ -51,22 +53,29 @@ export default function SignupPage() {
     setUploading(false);
     setLoading(true);
 
-    const { data, error: signUpError } = await authClient.signUp.email({
-      name,
-      email,
-      password,
-      role,
-      plan: 'free',
-      image: imageUrl,
-      callbackURL: '/',
-    });
+  const { data, error: signUpError } = await authClient.signUp.email({
+  name,
+  email,
+  password,
+  role,
+  image: imageUrl,
+  callbackURL: '/',
+});
 
+    // ✅ Fix — only redirect on success
     setLoading(false);
     if (signUpError) {
-      setError(signUpError.message || 'Something went wrong. Please try again.');
+      setError(signUpError.message || 'Something went wrong.');
+      return; // ← stop here
     }
+    router.push('/login');
 
-    console.log(data, signUpError);
+    // console.log(data, signUpError);
+    await authClient.signOut()
+    window.location.reload()
+    router.push('/login')
+
+
   };
 
   const isSubmitting = uploading || loading;
@@ -249,8 +258,8 @@ export default function SignupPage() {
               {uploading
                 ? '⟳  Uploading Image...'
                 : loading
-                ? '⟳  Creating Account...'
-                : 'Create Account →'
+                  ? '⟳  Creating Account...'
+                  : 'Create Account →'
               }
             </motion.button>
 
