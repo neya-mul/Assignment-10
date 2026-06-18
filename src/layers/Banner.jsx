@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import boy from "../../public/boy.png";
+// import bg from '../../public/bg-effect.png'
 
 const Banner = () => {
   return (

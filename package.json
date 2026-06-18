@@ -10,6 +10,9 @@
   },
   "dependencies": {
     "@better-auth/mongo-adapter": "^1.6.19",
+    "@gravity-ui/icons": "^2.18.0",
+    "@heroui/react": "^3.2.1",
+    "@heroui/styles": "^3.2.1",
     "better-auth": "^1.6.19",
     "framer-motion": "^12.40.0",
     "mongodb": "^7.3.0",
@@ -21,6 +24,7 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "babel-plugin-react-compiler": "1.0.0",
+    "daisyui": "^5.5.23",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
     "tailwindcss": "^4"
