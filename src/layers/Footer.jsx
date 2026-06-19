@@ -1,7 +1,15 @@
+'use client'
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+// import { useParams } from 'next/navigation';
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 
 export default function Footer() {
+  const footerLink = usePathname()
+  if(footerLink.includes('dashboard')){
+    return null
+  }
+
   return (
     <footer className="bg-white border-t border-gray-100 dark:bg-gray-900 dark:border-gray-800">
       <div className="max-w-7xl mx-auto px-4 py-8 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
