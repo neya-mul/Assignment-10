@@ -26,11 +26,11 @@ export default function DashboardLayout({ children }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  // 1. Structured Navigation Items Array
+  // 1. Structured Navigation Items Array (Fixed typos and path structures)
   const dashboardLinks = {
     member: [
       { name: 'Overview', href: '/dashboard/member', icon: <FaTachometerAlt /> },
-      { name: 'Booked Classes', href: '/dashboard/member/booked-clases', icon: <FaCalendarCheck /> },
+      { name: 'Booked Classes', href: '/dashboard/member/booked-classes', icon: <FaCalendarCheck /> }, // Fixed typo: -clases to -classes
       { name: 'Apply as Trainer', href: '/dashboard/member/apply-as-trainer', icon: <FaUserTie /> },
       { name: 'Favourite', href: '/dashboard/member/favourites', icon: <FaHeart /> },
     ],
@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }) {
       { name: 'Manage Users', href: '/dashboard/admin/manage-users', icon: <FaUsers /> },
       { name: 'Applied Trainers', href: '/dashboard/admin/applied-trainers', icon: <FaUserCheck /> },
       { name: 'Manage Trainers', href: '/dashboard/admin/manage-trainers', icon: <FaChalkboardTeacher /> },
-      { name: 'Manage Classes', href: '/dashboard/admin/manage-clases', icon: <FaClipboardList /> },
+      { name: 'Manage Classes', href: '/dashboard/admin/manage-classes', icon: <FaClipboardList /> }, // Fixed typo: -clases to -classes
       { name: 'Add Forum Post', href: '/dashboard/admin/add-forum', icon: <FaPlusCircle /> },
       { name: 'Transaction', href: '/dashboard/admin/transaction', icon: <FaMoneyBillWave /> },
       { name: 'Forum Posts Manage', href: '/dashboard/admin/forum-posts', icon: <FaComments /> },
@@ -84,12 +84,14 @@ export default function DashboardLayout({ children }) {
             >
               S
             </div>
-            <span 
-              className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
-              style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
-            >
-              FitnessCafe
-            </span>
+            <Link href='/'>
+              <span 
+                className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
+                style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
+              >
+                FitnessCafe
+              </span>
+            </Link>
           </div>
           <button
             className="md:hidden text-white/40 hover:text-purple-400 p-1 transition-colors"
@@ -99,13 +101,13 @@ export default function DashboardLayout({ children }) {
           </button>
         </div>
 
-        {/* Sidebar Navigation Links (Dynamically Mapped with Exact Match Checking) */}
+        {/* Sidebar Navigation Links */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-purple-500/20">
           {navItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
-                key={item.name}
+                key={item.href} // Fixed: Changed key from item.name to item.href to guarantee absolute uniqueness
                 href={item.href}
                 onClick={() => setIsSidebarOpen(false)}
                 className={`flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-semibold tracking-wide uppercase transition-all duration-200 ${
@@ -142,14 +144,14 @@ export default function DashboardLayout({ children }) {
               <FiMenu size={20} />
             </button>
             <span className="hidden md:inline-block text-xs uppercase font-bold tracking-widest text-white/40">
-              Wellcome back <span className="text-white/70">{user?.role || 'Overview'}</span>
+              Welcome back, <span className="text-white/70">{user?.name || 'Overview'}</span> {/* Fixed: Spelling error 'Wellcome' and adjusted context fallback */}
             </span>
           </div>
 
           {/* User Profile Info Frame */}
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
-              <p className="text-xs font-bold text-white/80">{user?.name || 'Stryder Account'}</p>
+              <p className="text-xs font-bold text-white/80">{user?.name || 'Guest Account'}</p>
               <p className="text-[10px] uppercase tracking-wider text-purple-400/80 font-extrabold">{user?.role || 'Guest'}</p>
             </div>
             <div className="w-9 h-9 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 flex items-center justify-center font-bold text-xs shadow-[0_0_15px_rgba(123,92,240,0.15)] overflow-hidden">
