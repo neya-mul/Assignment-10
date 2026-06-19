@@ -1,12 +1,18 @@
 "use client"
+
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiMail, FiLock } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [formData, setFormData] = useState({ email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -15,79 +21,144 @@ export default function LoginPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Login Data Submitted:", formData);
-    const { data, error } = await authClient.signIn.email({
-      email: formData.email, // required
-      password: formData.password, // required
+    setError('');
+    setLoading(true);
+
+    const { data, error: signInError } = await authClient.signIn.email({
+      email: formData.email,
+      password: formData.password,
       rememberMe: true,
       callbackURL: "/",
     });
 
+    setLoading(false);
+    if (signInError) {
+      setError(signInError.message || 'Invalid email or password.');
+      return;
+    }
+
+    router.push('/');
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50/50 px-4">
+    <div className="min-h-[calc(100vh-66px)] flex items-center justify-center bg-[#08060f] px-4 py-14">
+
+      {/* Background glow blobs */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-violet-700/10 rounded-full blur-[100px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-purple-500/8 rounded-full blur-[120px]" />
+      </div>
+
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4 }}
-        className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl shadow-gray-100/70 border border-gray-100"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45 }}
+        className="relative w-full max-w-md"
       >
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-2">Welcome Back</h2>
-        <p className="text-gray-500 text-center mb-8 text-sm">Please enter your details to sign in</p>
+        {/* Card */}
+        <div className="bg-[#0e0b1f]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 shadow-[0_0_60px_rgba(123,92,240,0.1)]">
 
-        <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Email Field */}
-          <div>
-            <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Email Address</label>
-            <div className="relative">
-              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                required
-                placeholder="you@example.com"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-gray-800"
-              />
+          {/* Header */}
+          <div className="text-center mb-8">
+            <div
+              className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-black text-xl mx-auto mb-4"
+              style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
+            >
+              S
             </div>
+            <h2
+              className="text-3xl font-black tracking-[.12em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent uppercase mb-1"
+              style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
+            >
+              Welcome Back
+            </h2>
+            <p className="text-white/40 text-sm">Stride Today. Strong Tomorrow.</p>
           </div>
 
-          {/* Password Field */}
-          <div>
-            <div className="flex justify-between mb-2">
-              <label className="block text-xs font-semibold text-gray-600 uppercase tracking-wider">Password</label>
-              <a href="#" className="text-xs text-blue-600 hover:underline">Forgot?</a>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Field */}
+            <div>
+              <label className="block text-[11px] font-bold text-white/40 uppercase tracking-[.1em] mb-1.5">
+                Email Address
+              </label>
+              <div className="relative">
+                <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60" size={16} />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="you@example.com"
+                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-sm focus:outline-none focus:border-purple-500/60 focus:bg-purple-500/5 transition-all duration-200"
+                />
+              </div>
             </div>
-            <div className="relative">
-              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input
-                type="password"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-                required
-                placeholder="••••••••"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-gray-800"
-              />
+
+            {/* Password Field */}
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="block text-[11px] font-bold text-white/40 uppercase tracking-[.1em]">
+                  Password
+                </label>
+                <Link href="/forgot-password" className="text-[11px] font-semibold text-purple-400 hover:text-purple-300 transition-colors uppercase tracking-wider">
+                  Forgot?
+                </Link>
+              </div>
+              <div className="relative">
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60" size={16} />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  required
+                  placeholder="••••••••"
+                  className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-sm focus:outline-none focus:border-purple-500/60 focus:bg-purple-500/5 transition-all duration-200"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-purple-400 transition-colors"
+                >
+                  {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* Submit Button */}
-          <motion.button
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            type="submit"
-            className="w-full py-3 mt-2 rounded-xl bg-blue-600 text-white font-semibold shadow-lg shadow-blue-200 hover:bg-blue-700 transition-all"
-          >
-            Sign In
-          </motion.button>
-        </form>
+            {/* Error Message */}
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-center gap-2 px-4 py-3 rounded-xl bg-red-500/10 border border-red-500/25 text-red-400 text-sm"
+              >
+                <span className="text-base">⚠</span>
+                {error}
+              </motion.div>
+            )}
 
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Don't have an account? <Link href="/signup" className="text-blue-600 font-medium hover:underline">Sign up</Link>
-        </p>
+            {/* Submit Button */}
+            <motion.button
+              whileHover={{ scale: loading ? 1 : 1.01 }}
+              whileTap={{ scale: loading ? 1 : 0.99 }}
+              type="submit"
+              disabled={loading}
+              className="w-full py-3.5 mt-1 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-white font-bold text-sm tracking-[.08em] uppercase shadow-[0_0_24px_rgba(123,92,240,0.45)] hover:shadow-[0_0_32px_rgba(123,92,240,0.65)] disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              {loading ? '⟳  Signing In...' : 'Sign In →'}
+            </motion.button>
+          </form>
+
+          {/* Footer */}
+          <p className="text-center text-sm text-white/30 mt-6">
+            Don't have an account?{' '}
+            <Link href="/signup" className="text-purple-400 font-semibold hover:text-purple-300 transition-colors">
+              Sign up
+            </Link>
+          </p>
+
+        </div>
       </motion.div>
     </div>
   );

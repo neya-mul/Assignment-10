@@ -5,8 +5,14 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiMenu, FiX, FiLogOut, FiUser, FiChevronDown } from 'react-icons/fi';
 import { authClient } from '@/lib/auth-client';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
+const navLink  = usePathname()
+if(navLink.includes('dashboard')){
+  return null
+}
+
   const [isOpen, setIsOpen] = useState(false);
   const { data: session } = authClient.useSession();
   const user = session?.user;
@@ -16,7 +22,7 @@ export default function Navbar() {
     setIsOpen(false);
   };
 
-  const dashboardPath = `/dashboard/${user?.role ?? 'member'}`;
+  // const dashboardPath = `/dashboard/${user?.role ?? 'member'}`;
 
   return (
     <nav className="sticky top-0 z-50 bg-[#08060f]/90 backdrop-blur-xl border-b border-purple-500/20">
@@ -59,7 +65,7 @@ export default function Navbar() {
             {/* Conditional Dashboard */}
             {user && (
               <Link
-                href={dashboardPath}
+                href={`dashboard/${user?.role}`}
                 className="text-purple-400 text-[12px] font-bold tracking-[.09em] uppercase px-3.5 py-1.5 rounded-lg border border-purple-500/35 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-200 ml-1"
               >
                 Dashboard

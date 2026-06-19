@@ -2,26 +2,49 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiUser, FiMail, FiLock, FiCamera, FiChevronDown } from 'react-icons/fi';
+import { FiUser, FiMail, FiLock, FiCamera, FiChevronDown, FiEye, FiEyeOff } from 'react-icons/fi';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { uploadToImgBB } from '@/lib/iamgeUpload/imageUpload';
 import { useRouter } from 'next/navigation';
-// import { uploadToImgBB } from '@/lib/imageUploadFunction/image';
 
 export default function SignupPage() {
-  const router = useRouter()
+  const router = useRouter();
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Password visibility states
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setImageFile(file);
     setImagePreview(URL.createObjectURL(file));
+  };
+
+  // Helper function to validate password complexity
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long.';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Password must contain at least one uppercase letter.';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Password must contain at least one lowercase letter.';
+    }
+    if (!/[0-9]/.test(password)) {
+      return 'Password must contain at least one number.';
+    }
+    if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      return 'Password must contain at least one special character.';
+    }
+    return null;
   };
 
   const handleSubmit = async (e) => {
@@ -34,8 +57,16 @@ export default function SignupPage() {
     const confirmPass = e.target.confirmPassword.value;
     const role = e.target.role.value;
 
+    // 1. Check if passwords match
     if (password !== confirmPass) {
       setError('Passwords do not match');
+      return;
+    }
+
+    // 2. Validate password strength
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setError(passwordError);
       return;
     }
 
@@ -53,29 +84,24 @@ export default function SignupPage() {
     setUploading(false);
     setLoading(true);
 
-  const { data, error: signUpError } = await authClient.signUp.email({
-  name,
-  email,
-  password,
-  role,
-  image: imageUrl,
-  callbackURL: '/',
-});
+    const { data, error: signUpError } = await authClient.signUp.email({
+      name,
+      email,
+      password,
+      role,
+      image: imageUrl,
+      callbackURL: '/',
+    });
 
-    // ✅ Fix — only redirect on success
     setLoading(false);
     if (signUpError) {
       setError(signUpError.message || 'Something went wrong.');
-      return; // ← stop here
+      return;
     }
+
+    // Ensure state cleanup before pushing routes
+    await authClient.signOut();
     router.push('/login');
-
-    // console.log(data, signUpError);
-    await authClient.signOut()
-    window.location.reload()
-    router.push('/login')
-
-
   };
 
   const isSubmitting = uploading || loading;
@@ -117,7 +143,7 @@ export default function SignupPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
 
-            {/* ── Profile Image Upload (fixed) ── */}
+            {/* Profile Image Upload */}
             <div className="flex flex-col items-center mb-2">
               <label htmlFor="avatarUpload" className="relative group cursor-pointer">
                 <div className="w-24 h-24 rounded-full border-2 border-dashed border-purple-500/40 group-hover:border-purple-400 flex items-center justify-center overflow-hidden bg-purple-500/5 transition-all duration-300">
@@ -134,11 +160,9 @@ export default function SignupPage() {
                     </div>
                   )}
                 </div>
-                {/* Hover ring */}
                 <div className="absolute inset-0 rounded-full ring-2 ring-purple-500/0 group-hover:ring-purple-500/30 transition-all duration-300" />
               </label>
 
-              {/* Input outside the div — linked via htmlFor/id, no overflow clipping */}
               <input
                 id="avatarUpload"
                 type="file"
@@ -209,12 +233,19 @@ export default function SignupPage() {
               <div className="relative">
                 <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60" size={16} />
                 <input
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   name="password"
                   required
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-sm focus:outline-none focus:border-purple-500/60 focus:bg-purple-500/5 transition-all duration-200"
+                  className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-sm focus:outline-none focus:border-purple-500/60 focus:bg-purple-500/5 transition-all duration-200"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-purple-400 transition-colors"
+                >
+                  {showPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                </button>
               </div>
             </div>
 
@@ -226,12 +257,19 @@ export default function SignupPage() {
               <div className="relative">
                 <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60" size={16} />
                 <input
-                  type="password"
+                  type={showConfirmPassword ? "text" : "password"}
                   name="confirmPassword"
                   required
                   placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-sm focus:outline-none focus:border-purple-500/60 focus:bg-purple-500/5 transition-all duration-200"
+                  className="w-full pl-10 pr-12 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-sm focus:outline-none focus:border-purple-500/60 focus:bg-purple-500/5 transition-all duration-200"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-white/40 hover:text-purple-400 transition-colors"
+                >
+                  {showConfirmPassword ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+                </button>
               </div>
             </div>
 
@@ -278,3 +316,6 @@ export default function SignupPage() {
     </div>
   );
 }
+
+
+// Admin@123
