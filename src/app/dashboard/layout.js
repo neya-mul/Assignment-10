@@ -88,7 +88,7 @@ export default function DashboardLayout({ children }) {
               className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
               style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
             >
-              STRYDE
+              FitnessCafe
             </span>
           </div>
           <button
@@ -142,7 +142,7 @@ export default function DashboardLayout({ children }) {
               <FiMenu size={20} />
             </button>
             <span className="hidden md:inline-block text-xs uppercase font-bold tracking-widest text-white/40">
-              Workspace Profile / <span className="text-white/70">{user?.role || 'Overview'}</span>
+              Wellcome back <span className="text-white/70">{user?.role || 'Overview'}</span>
             </span>
           </div>
 
