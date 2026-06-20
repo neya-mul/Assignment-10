@@ -50,7 +50,7 @@ if(navLink.includes('dashboard')){
 
             {[
               { label: 'Home', href: '/' },
-              { label: 'All Classes', href: '/classes' },
+              { label: 'All Classes', href: '/all-classess' },
               { label: 'Community', href: '/community' },
             ].map(({ label, href }) => (
               <Link

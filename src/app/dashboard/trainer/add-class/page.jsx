@@ -1,6 +1,8 @@
 "use client";
 
+import { useSession } from "@/lib/auth-client";
 import { uploadToImgBB } from "@/lib/iamgeUpload/imageUpload";
+import { toast } from "@heroui/react";
 import React, { useState } from "react";
 import {
   FiImage,
@@ -13,6 +15,10 @@ import {
 } from "react-icons/fi";
 
 export default function AddClass() {
+  const { data: session } = useSession()
+  const user = session?.user
+  // console.log(user);
+
   const [formData, setFormData] = useState({
     className: "",
     image: null,
@@ -26,32 +32,49 @@ export default function AddClass() {
 
 
   const handleSubmit = async (e) => {
-e.preventDefault()
-  try {
-    let imageUrl = "";
+    e.preventDefault()
+    try {
+      let imageUrl = "";
 
-    if (formData.image) {
-      imageUrl = await uploadToImgBB(formData.image);
+      if (formData.image) {
+        imageUrl = await uploadToImgBB(formData.image);
+      }
+
+      const classData = {
+        className: formData.className,
+        image: imageUrl,
+        category: formData.category,
+        difficulty: formData.difficulty,
+        duration: formData.duration,
+        scheduleTime: formData.scheduleTime,
+        price: formData.price,
+        description: formData.description,
+        status: 'pending',
+        trainerName: user?.name,
+        trainerId: user?.id
+      };
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}all-classes`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify(classData)
+      })
+      const data =await res.json()
+      // console.log(data)
+
+      if(data.insertedId){
+        toast('Class added')
+        window.location.reload()
+      }
+
+
+      // save classData to database
+    } catch (error) {
+      console.error(error);
     }
-
-    const classData = {
-      className: formData.className,
-      image: imageUrl,
-      category: formData.category,
-      difficulty: formData.difficulty,
-      duration: formData.duration,
-      scheduleTime: formData.scheduleTime,
-      price: formData.price,
-      description: formData.description,
-    };
-
-    console.log(classData);
-
-    // save classData to database
-  } catch (error) {
-    console.error(error);
-  }
-};
+  };
 
   return (
     <div className="max-w-3xl space-y-6">
