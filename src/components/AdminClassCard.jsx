@@ -1,11 +1,12 @@
 'use client'
+import { toast } from '@heroui/react';
 import React from 'react'
 import { FiCheck, FiX, FiTrash2, FiClock, FiCheckCircle, FiAlertCircle } from 'react-icons/fi';
 
 
 const AdminClassCard = ({ c }) => {
     const handleApprove = async () => {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}admin-classes/${c?.id}`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}admin-classes/${c?._id}`, {
             method: 'PATCH',
             headers: {
                 'content-type': 'application/json'
@@ -15,6 +16,10 @@ const AdminClassCard = ({ c }) => {
         })
         const data = await res.json()
         console.log(data);
+        if(data){
+            toast('Class Approved')
+        }
+        window.location.reload()
         
 
     }
@@ -35,10 +40,8 @@ const AdminClassCard = ({ c }) => {
                 <div className="flex items-center justify-end gap-2">
 
                     {/* Approve */}
-                    <button
-                        onClick={handleApprove}
-
-                        className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
+                    <button onClick={handleApprove}
+ className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
     bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
     hover:bg-emerald-500/20 hover:border-emerald-400/40
     transition-all duration-200"
@@ -48,7 +51,7 @@ const AdminClassCard = ({ c }) => {
                     </button>
 
                     {/* Reject */}
-                    <button
+                    <button type='button'
                         className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
     bg-red-500/10 text-red-400 border border-red-500/20
     hover:bg-red-500/20 hover:border-red-400/40
