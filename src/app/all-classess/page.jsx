@@ -56,14 +56,27 @@ const AllClasses = async () => {
           </div>
         ) : (
           /* Null/Void Dataset Fallback Alert Card */
-          <div className="py-20 text-center border border-dashed border-purple-500/10 rounded-2xl bg-[#0c091f]/20 space-y-2">
-            <div className="text-white/20 text-xs font-bold uppercase tracking-widest font-mono">
-              No Array Intersections Found
-            </div>
-            <p className="text-[11px] text-white/30 max-w-xs mx-auto">
-              Verify database instances are currently initialized or check system execution logs.
-            </p>
-          </div>
+         <div className="py-24 text-center border border-purple-500/10 rounded-3xl bg-gradient-to-b from-[#0c091f] to-[#05020a]">
+  <p className="text-purple-400 text-xs tracking-[0.4em] uppercase mb-4">
+    System Status
+  </p>
+
+  <h2 className="text-4xl font-black tracking-wider text-white">
+    NO APPROVED CLASSES
+  </h2>
+
+  <p className="mt-4 text-white/40 max-w-lg mx-auto">
+    The training matrix is currently empty. Once instructors publish
+    approved programs, they will appear here automatically.
+  </p>
+
+  <div className="mt-8 inline-flex items-center gap-2 px-4 py-2 rounded-full border border-purple-500/20 bg-purple-500/5">
+    <div className="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></div>
+    <span className="text-xs text-white/60">
+      Awaiting New Class Deployments
+    </span>
+  </div>
+</div>
         )}
 
       </div>

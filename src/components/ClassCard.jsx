@@ -4,6 +4,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 const ClassCard = ({ cls }) => {
+
+  if(cls.status.toLowerCase() !== 'approved'){
+    return null
+  }
   return (
     <motion.div
       initial={{ opacity: 0, y: 20, scale: 0.98 }}
