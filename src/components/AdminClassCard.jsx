@@ -4,6 +4,20 @@ import { FiCheck, FiX, FiTrash2, FiClock, FiCheckCircle, FiAlertCircle } from 'r
 
 
 const AdminClassCard = ({ c }) => {
+    const handleApprove = async () => {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}admin-classes/${c?.id}`, {
+            method: 'PATCH',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify({ 'status': 'approved' })
+
+        })
+        const data = await res.json()
+        console.log(data);
+        
+
+    }
     return (
         <tr className="hover:bg-purple-500/5 transition-colors">
             <td className="py-4 px-6 font-semibold text-white/90">{c.className}</td>
@@ -22,6 +36,8 @@ const AdminClassCard = ({ c }) => {
 
                     {/* Approve */}
                     <button
+                        onClick={handleApprove}
+
                         className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
     bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
     hover:bg-emerald-500/20 hover:border-emerald-400/40
