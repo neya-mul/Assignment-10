@@ -46,7 +46,7 @@ export default function DashboardLayout({ children }) {
       { name: 'Manage Users', href: '/dashboard/admin/manage-users', icon: <FaUsers /> },
       { name: 'Applied Trainers', href: '/dashboard/admin/applied-trainers', icon: <FaUserCheck /> },
       { name: 'Manage Trainers', href: '/dashboard/admin/manage-trainers', icon: <FaChalkboardTeacher /> },
-      { name: 'Manage Classes', href: '/dashboard/admin/manage-classes', icon: <FaClipboardList /> }, // Fixed typo: -clases to -classes
+      { name: 'Manage Classes', href: '/dashboard/admin/manage-clases', icon: <FaClipboardList /> }, // Fixed typo: -clases to -classes
       { name: 'Add Forum Post', href: '/dashboard/admin/add-forum', icon: <FaPlusCircle /> },
       { name: 'Transaction', href: '/dashboard/admin/transaction', icon: <FaMoneyBillWave /> },
       { name: 'Forum Posts Manage', href: '/dashboard/admin/forum-posts', icon: <FaComments /> },

@@ -48,7 +48,7 @@ const ClassCard = ({ cls }) => {
 
       {/* Meta info */}
       <div className="mt-5 flex items-center justify-between text-[11px] text-white/30 font-mono uppercase tracking-widest">
-        <span>ID: {cls?._id?.slice?.(-6) || cls?.id || 'N/A'}</span>
+        {/* <span>ID: {cls?._id?.slice?.(-6) || cls?.id || 'N/A'}</span> */}
         <span className="text-purple-400/70">
           {cls?.difficulty || 'BEGINNER'}
         </span>

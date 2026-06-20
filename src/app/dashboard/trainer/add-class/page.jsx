@@ -65,7 +65,6 @@ export default function AddClass() {
       // console.log(data)
 
       if(data.insertedId){
-        toast('Class added')
         window.location.reload()
       }
 
@@ -74,6 +73,8 @@ export default function AddClass() {
     } catch (error) {
       console.error(error);
     }
+            toast('Class added')
+
   };
 
   return (
@@ -137,25 +138,46 @@ export default function AddClass() {
 
         {/* Category, Difficulty, Duration */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-          <div className="space-y-1.5">
-            <label className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-1.5">
-              <FiGrid className="text-purple-400" />
-              Category
-            </label>
+         <div className="space-y-1.5">
+  <label className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-1.5">
+    <FiGrid className="text-purple-400" />
+    Category
+  </label>
 
-            <input
-              type="text"
-              placeholder="e.g. Cardio"
-              value={formData.category}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  category: e.target.value,
-                })
-              }
-              className="w-full px-4 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-xs focus:outline-none focus:border-purple-500/50"
-            />
-          </div>
+  <select
+    value={formData.category}
+    onChange={(e) =>
+      setFormData({
+        ...formData,
+        category: e.target.value,
+      })
+    }
+    className="w-full px-4 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white text-xs focus:outline-none focus:border-purple-500/50"
+  >
+    <option value="" className="bg-[#120f26]">
+      Select Category
+    </option>
+    <option value="Cardio" className="bg-[#120f26]">
+      Cardio
+    </option>
+    <option value="Strength Training" className="bg-[#120f26]">
+      Strength Training
+    </option>
+    <option value="Yoga" className="bg-[#120f26]">
+      Yoga
+    </option>
+    <option value="Pilates" className="bg-[#120f26]">
+      Pilates
+    </option>
+    <option value="CrossFit" className="bg-[#120f26]">
+      CrossFit
+    </option>
+    <option value="HIIT" className="bg-[#120f26]">
+      HIIT
+    </option>
+   
+  </select>
+</div>
 
           <div className="space-y-1.5">
             <label className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-1.5">
