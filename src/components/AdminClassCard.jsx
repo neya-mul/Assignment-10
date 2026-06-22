@@ -16,13 +16,35 @@ const AdminClassCard = ({ c }) => {
         })
         const data = await res.json()
         console.log(data);
-        if(data){
+        if (data) {
             toast('Class Approved')
         }
         window.location.reload()
-        
+
 
     }
+
+    // const handleReject = async()=>{
+
+
+    // }
+
+
+    const handleDelete = async () => {
+        const res = await fetch(
+            `${process.env.NEXT_PUBLIC_URL}admin-classes/${c?._id}`,
+            {
+                method: 'DELETE'
+            }
+        );
+
+        const data = await res.json();
+
+        if (data.deletedCount > 0) {
+            toast('Class deleted');
+            window.location.reload();
+        }
+    };
     return (
         <tr className="hover:bg-purple-500/5 transition-colors">
             <td className="py-4 px-6 font-semibold text-white/90">{c.className}</td>
@@ -41,7 +63,7 @@ const AdminClassCard = ({ c }) => {
 
                     {/* Approve */}
                     <button onClick={handleApprove}
- className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
+                        className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
     bg-emerald-500/10 text-emerald-400 border border-emerald-500/20
     hover:bg-emerald-500/20 hover:border-emerald-400/40
     transition-all duration-200"
@@ -51,7 +73,9 @@ const AdminClassCard = ({ c }) => {
                     </button>
 
                     {/* Reject */}
-                    <button type='button'
+                    <button
+                        // onClick={handleReject}
+                        type='button'
                         className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
     bg-red-500/10 text-red-400 border border-red-500/20
     hover:bg-red-500/20 hover:border-red-400/40
@@ -63,6 +87,7 @@ const AdminClassCard = ({ c }) => {
 
                     {/* Delete */}
                     <button
+                        onClick={handleDelete}
                         className="flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-md
     bg-white/5 text-white/60 border border-white/10
     hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/30
