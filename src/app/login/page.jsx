@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-66px)] flex items-center justify-center bg-[#08060f] px-4 py-14">
+    <div className="min-h-screen flex items-center justify-center bg-[#08060f] px-4 py-14">
 
       {/* Background glow blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

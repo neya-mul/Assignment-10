@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import TrainerClassUpdateModal from "@/Modals/TrainerCalssUpdateModal";
+import TrainerDeleteModal from "@/Modals/TrainerDeleteModal";
 import { headers } from "next/headers";
 import Link from "next/link";
 
@@ -101,11 +102,7 @@ export default async function MyClasses() {
               <div className="flex flex-wrap gap-2 sm:justify-center">
 
                 <TrainerClassUpdateModal c={c}></TrainerClassUpdateModal>
-                <button className="flex-1 sm:flex-none px-3 py-1.5 text-[11px] font-bold uppercase rounded-md
-                  bg-red-500/10 text-red-400 border border-red-500/20
-                  hover:bg-red-500/20 transition">
-                  Delete
-                </button>
+                <TrainerDeleteModal c={c}></TrainerDeleteModal>
 
                 <button className="flex-1 sm:flex-none px-3 py-1.5 text-[11px] font-bold uppercase rounded-md
                   bg-cyan-500/10 text-cyan-300 border border-cyan-500/20
