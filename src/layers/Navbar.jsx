@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -14,12 +14,27 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
 
-  // Hooks must be called at the top level, before any conditional returns
+  // Track page scroll position
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 20) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Hooks must be called at the top level
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
-  // Early return is now safely placed AFTER all hooks have been declared
+  // Early return safely placed after hooks
   if (pathname.includes('dashboard')) return null;
 
   const handleLogout = async () => {
@@ -38,22 +53,34 @@ export default function Navbar() {
     href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
-    <nav className="sticky top-0 z-50">
-      {/* Glass bar */}
-      <div className="bg-[#07050f]/80 backdrop-blur-2xl border-b border-white/[0.06]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-[68px]">
+    // changed fixed to fixed top-0 left-0 right-0 so it overlaps cleanly on the banner
+    <nav className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ease-in-out">
+      {/* Dynamic Background: 
+        - Transparent when at the top (over the banner)
+        - Fades smoothly into deep dark purple/black color on scroll
+      */}
+      <div 
+        className={`
+          transition-all duration-500 ease-in-out border-b
+          ${isScrolled 
+            ? 'bg-[#050816] bg-gradient-to-b from-[#1e0b3a]/40 to-transparent backdrop-blur-xl border-purple-500/15 shadow-[0_10px_40px_rgba(5,8,22,0.8)] h-[72px]' 
+            : 'bg-transparent border-transparent h-[80px]'
+          }
+        `}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
+          <div className="flex items-center justify-between h-full">
 
             {/* ── Logo ── */}
-            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
+            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
               <div
-                className="w-8 h-8 bg-gradient-to-br from-violet-500 to-purple-400 flex items-center justify-center text-white font-black text-[15px] flex-shrink-0 shadow-[0_0_14px_rgba(139,92,246,0.5)]"
+                className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center text-white font-black text-[15px] flex-shrink-0 shadow-[0_0_15px_rgba(124,58,237,0.6)] group-hover:scale-105 transition-transform duration-300"
                 style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
               >
                 S
               </div>
               <span
-                className="font-black text-[21px] tracking-[.14em] bg-gradient-to-r from-white to-purple-300 bg-clip-text text-transparent uppercase"
+                className="font-black text-[22px] tracking-[.18em] bg-gradient-to-r from-white via-purple-200 to-violet-400 bg-clip-text text-transparent uppercase transition-all duration-300 group-hover:opacity-90"
                 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
               >
                 STRYDE
@@ -61,7 +88,7 @@ export default function Navbar() {
             </Link>
 
             {/* ── Desktop nav links ── */}
-            <div className="hidden md:flex items-center gap-0.5">
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map(({ label, href, icon }) => {
                 const active = isActive(href);
                 return (
@@ -69,122 +96,115 @@ export default function Navbar() {
                     key={href}
                     href={href}
                     className={`
-                      relative flex items-center gap-1.5
-                      text-[12px] font-semibold tracking-[.08em] uppercase
-                      px-4 py-2 rounded-lg transition-all duration-200
+                      relative flex items-center gap-2
+                      text-[11px] font-bold tracking-[.1em] uppercase
+                      px-4 py-2.5 rounded-full transition-all duration-300
                       ${active
                         ? 'text-white'
-                        : 'text-white/45 hover:text-white/80 hover:bg-white/5'
+                        : 'text-white/50 hover:text-white/90 hover:bg-white/[0.03]'
                       }
                     `}
                   >
-                    {/* Active indicator */}
+                    {/* Active dynamic pill background */}
                     {active && (
                       <motion.div
                         layoutId="activeNav"
-                        className="absolute inset-0 rounded-lg bg-purple-500/15 border border-purple-500/25"
-                        transition={{ type: 'spring', stiffness: 380, damping: 32 }}
+                        className="absolute inset-0 rounded-full bg-gradient-to-r from-violet-600/20 to-purple-500/20 border border-purple-500/30 shadow-[0_0_15px_rgba(139,92,246,0.15)]"
+                        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                       />
                     )}
-                    <span className={`relative z-10 ${active ? 'text-purple-400' : ''}`}>{icon}</span>
+                    <span className={`relative z-10 transition-colors duration-300 ${active ? 'text-violet-400' : 'text-white/40'}`}>
+                      {icon}
+                    </span>
                     <span className="relative z-10">{label}</span>
-                    {active && (
-                      <span className="relative z-10 w-1 h-1 rounded-full bg-purple-400 ml-0.5" />
-                    )}
                   </Link>
                 );
               })}
             </div>
 
             {/* ── Right: Auth ── */}
-            <div className="hidden md:flex items-center gap-2.5">
+            <div className="hidden md:flex items-center gap-3">
               {user ? (
-                <>
-                  {/* User dropdown trigger */}
-                  <div className="relative">
-                    <button
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="flex items-center gap-2.5 pl-1.5 pr-3 py-1.5 rounded-full border border-white/10 bg-white/5 hover:bg-white/8 hover:border-purple-500/30 transition-all duration-200 cursor-pointer"
-                    >
-                      {/* Avatar */}
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-bold text-[12px] overflow-hidden flex-shrink-0 ring-2 ring-purple-500/30">
-                        {user.image
-                          ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
-                          : (user.name?.charAt(0).toUpperCase() ?? <FiUser size={12} />)
-                        }
-                      </div>
-                      <div className="flex flex-col items-start leading-none">
-                        <span className="text-white text-[12px] font-semibold">{user.name?.split(' ')[0]}</span>
-                        <span className="text-purple-400/70 text-[10px] capitalize mt-[2px]">{user.role}</span>
-                      </div>
-                      <FiChevronDown
-                        size={12}
-                        className={`text-white/30 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`}
-                      />
-                    </button>
+                <div className="relative">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-2.5 pl-2 pr-3 py-1.5 rounded-full border border-purple-500/20 bg-purple-950/20 hover:bg-purple-900/30 hover:border-purple-400/40 transition-all duration-300 cursor-pointer group"
+                  >
+                    {/* Avatar */}
+                    <div className="w-7 h-7 rounded-full bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-bold text-[12px] overflow-hidden flex-shrink-0 ring-2 ring-purple-500/40 group-hover:ring-purple-400 transition-all duration-300">
+                      {user.image
+                        ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+                        : (user.name?.charAt(0).toUpperCase() ?? <FiUser size={12} />)
+                      }
+                    </div>
+                    <div className="flex flex-col items-start leading-none">
+                      <span className="text-white text-[12px] font-semibold">{user.name?.split(' ')[0]}</span>
+                      <span className="text-purple-300/60 text-[9px] tracking-wider uppercase font-bold mt-[3px]">{user.role}</span>
+                    </div>
+                    <FiChevronDown
+                      size={12}
+                      className={`text-white/40 transition-transform duration-300 ${dropdownOpen ? 'rotate-180' : ''}`}
+                    />
+                  </button>
 
-                    {/* Dropdown menu */}
-                    <AnimatePresence>
-                      {dropdownOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 8, scale: 0.96 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 8, scale: 0.96 }}
-                          transition={{ duration: 0.15 }}
-                          className="absolute right-0 top-[calc(100%+10px)] w-56 bg-[#0e0b1f] border border-purple-500/20 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden"
-                        >
-                          {/* User info header */}
-                          <div className="px-4 py-3.5 border-b border-purple-500/10">
-                            <p className="text-white font-semibold text-[13px]">{user.name}</p>
-                            <p className="text-white/35 text-[11px] mt-0.5 truncate">{user.email}</p>
-                          </div>
+                  {/* Dropdown menu */}
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        className="absolute right-0 top-[calc(100%+12px)] w-56 bg-[#050816] border border-purple-500/25 rounded-2xl shadow-[0_25px_50px_-12px_rgba(0,0,0,0.9)] overflow-hidden"
+                      >
+                        {/* User profile section */}
+                        <div className="px-4 py-4 bg-gradient-to-b from-purple-950/20 to-transparent border-b border-purple-500/10">
+                          <p className="text-white font-bold text-[13px] tracking-wide">{user.name}</p>
+                          <p className="text-white/40 text-[11px] mt-0.5 truncate">{user.email}</p>
+                        </div>
 
-                          {/* Dashboard link */}
-                          <div className="p-2">
-                            <Link
-                              href={`dashboard/${user?.role}`}
-                              onClick={() => setDropdownOpen(false)}
-                              className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[12px] font-semibold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-150 tracking-wide uppercase"
-                            >
-                              <FiLayout size={13} />
-                              <span>Dashboard</span>
-                              <span className="ml-auto text-[10px] text-purple-400/50 capitalize font-medium normal-case">
-                                {user.role}
-                              </span>
-                            </Link>
-                          </div>
+                        {/* Actions */}
+                        <div className="p-2 space-y-1">
+                          <Link
+                            href={`dashboard/${user?.role}`}
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-200 tracking-wider uppercase"
+                          >
+                            <FiLayout size={13} className="text-purple-400" />
+                            <span>Dashboard</span>
+                            <span className="ml-auto text-[9px] text-purple-400/50 bg-purple-500/10 px-2 py-0.5 rounded-md capitalize font-semibold normal-case">
+                              {user.role}
+                            </span>
+                          </Link>
 
-                          {/* Logout */}
-                          <div className="px-2 pb-2">
-                            <button
-                              onClick={handleLogout}
-                              className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[12px] font-semibold text-red-400 hover:bg-red-500/10 transition-all duration-150 cursor-pointer tracking-wide uppercase"
-                            >
-                              <FiLogOut size={13} />
-                              Sign Out
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                </>
+                          <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold text-red-400 hover:bg-red-500/10 transition-all duration-200 cursor-pointer tracking-wider uppercase"
+                          >
+                            <FiLogOut size={13} />
+                            Sign Out
+                          </button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
               ) : (
                 <div className="flex items-center gap-2">
                   <Link
                     href="/login"
-                    className="text-white/50 hover:text-white text-[12px] font-semibold tracking-[.08em] uppercase px-3.5 py-2 rounded-lg hover:bg-white/5 transition-all duration-200"
+                    className="text-white/60 hover:text-white text-[11px] font-bold tracking-[.1em] uppercase px-4 py-2 rounded-full hover:bg-white/5 transition-all duration-200"
                   >
                     Login
                   </Link>
                   <Link
                     href="/signup"
-                    className="relative px-5 py-2.5 rounded-xl text-white font-bold text-[12px] tracking-[.1em] uppercase overflow-hidden group"
+                    className="relative px-5 py-2.5 rounded-full text-white font-bold text-[11px] tracking-[.1em] uppercase overflow-hidden group transition-all duration-300"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-500 transition-all duration-300" />
                     <span className="absolute inset-0 bg-gradient-to-r from-violet-500 to-purple-400 opacity-0 group-hover:opacity-100 transition-all duration-300" />
-                    <span className="absolute inset-0 shadow-[0_0_20px_rgba(139,92,246,0.5)] group-hover:shadow-[0_0_30px_rgba(139,92,246,0.7)] transition-all duration-300" />
-                    <span className="relative z-10">Join Now →</span>
+                    <span className="absolute inset-0 shadow-[0_0_20px_rgba(124,58,237,0.4)] group-hover:shadow-[0_0_25px_rgba(124,58,237,0.7)] transition-all duration-300" />
+                    <span className="relative z-10 flex items-center gap-1">Join Now →</span>
                   </Link>
                 </div>
               )}
@@ -193,7 +213,7 @@ export default function Navbar() {
             {/* ── Hamburger ── */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="md:hidden w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 border border-white/8 text-white/70 hover:text-white hover:bg-white/10 transition-all"
+              className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl bg-purple-950/20 border border-purple-500/20 text-white/70 hover:text-white hover:bg-purple-900/30 transition-all"
             >
               {isOpen ? <FiX size={18} /> : <FiMenu size={18} />}
             </button>
@@ -202,8 +222,8 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Active route underline */}
-      <div className="h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+      {/* Dynamic Underline Reflection (Only visible when scrolled) */}
+      <div className={`h-px bg-gradient-to-r from-transparent via-purple-500/40 to-transparent opacity-60 transition-opacity duration-500 ${isScrolled ? 'opacity-60' : 'opacity-0'}`} />
 
       {/* ── Mobile Drawer ── */}
       <AnimatePresence>
@@ -212,12 +232,12 @@ export default function Navbar() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.22, ease: 'easeInOut' }}
-            className="md:hidden bg-[#07050f]/95 backdrop-blur-2xl border-b border-white/[0.06] overflow-hidden"
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="md:hidden bg-[#050816] border-b border-purple-500/10 overflow-hidden"
           >
-            <div className="px-5 pt-4 pb-6 space-y-1">
+            <div className="px-4 pt-3 pb-6 space-y-1.5">
 
-              {/* Nav links */}
+              {/* Links */}
               {navLinks.map(({ label, href, icon }) => {
                 const active = isActive(href);
                 return (
@@ -227,15 +247,15 @@ export default function Navbar() {
                     onClick={() => setIsOpen(false)}
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-xl
-                      text-[13px] font-semibold tracking-[.07em] uppercase
+                      text-[12px] font-bold tracking-[.08em] uppercase
                       transition-all duration-200
                       ${active
-                        ? 'text-white bg-purple-500/15 border border-purple-500/25'
-                        : 'text-white/50 hover:text-white hover:bg-white/5'
+                        ? 'text-white bg-gradient-to-r from-violet-600/15 to-purple-500/15 border border-purple-500/30'
+                        : 'text-white/50 hover:text-white hover:bg-purple-950/10'
                       }
                     `}
                   >
-                    <span className={active ? 'text-purple-400' : 'text-white/30'}>{icon}</span>
+                    <span className={active ? 'text-violet-400' : 'text-white/30'}>{icon}</span>
                     {label}
                     {active && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-purple-400" />}
                   </Link>
@@ -244,38 +264,35 @@ export default function Navbar() {
 
               {user ? (
                 <>
-                  {/* Dashboard */}
                   <Link
                     href={`dashboard/${user?.role}`}
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold tracking-[.07em] uppercase text-purple-300 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/18 transition-all duration-200"
+                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-[12px] font-bold tracking-[.08em] uppercase text-purple-300 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all duration-200"
                   >
                     <FiLayout size={13} className="text-purple-400" />
                     Dashboard
-                    <span className="ml-auto text-[10px] text-purple-400/50 capitalize font-medium normal-case">{user.role}</span>
+                    <span className="ml-auto text-[9px] bg-purple-500/20 px-2 py-0.5 rounded-md text-purple-300 capitalize font-medium normal-case">{user.role}</span>
                   </Link>
 
-                  {/* Divider */}
-                  <div className="h-px bg-white/5 my-2" />
+                  <div className="h-px bg-purple-500/10 my-3" />
 
-                  {/* User info */}
-                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/5">
+                  {/* Profile Summary */}
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-purple-950/10 border border-purple-500/10">
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-bold text-sm overflow-hidden flex-shrink-0 ring-2 ring-purple-500/30">
                       {user.image
                         ? <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
                         : (user.name?.charAt(0).toUpperCase() ?? <FiUser />)
                       }
                     </div>
-                    <div>
-                      <p className="text-white font-bold text-[13px]">{user.name}</p>
-                      <p className="text-white/35 text-[11px] mt-0.5">{user.email}</p>
+                    <div className="overflow-hidden">
+                      <p className="text-white font-bold text-[13px] truncate">{user.name}</p>
+                      <p className="text-white/40 text-[11px] truncate mt-0.5">{user.email}</p>
                     </div>
                   </div>
 
-                  {/* Logout */}
                   <button
                     onClick={handleLogout}
-                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-500/8 border border-red-500/20 text-red-400 font-bold text-[12px] tracking-[.08em] uppercase hover:bg-red-500/15 transition-all cursor-pointer"
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-red-500/5 border border-red-500/20 text-red-400 font-bold text-[12px] tracking-[.08em] uppercase hover:bg-red-500/15 transition-all cursor-pointer"
                   >
                     <FiLogOut size={14} />
                     Sign Out
@@ -283,18 +300,18 @@ export default function Navbar() {
                 </>
               ) : (
                 <>
-                  <div className="h-px bg-white/5 my-2" />
+                  <div className="h-px bg-purple-500/10 my-3" />
                   <Link
                     href="/login"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center py-3 rounded-xl text-white/55 text-[13px] font-semibold tracking-[.08em] uppercase hover:text-white hover:bg-white/5 transition-all"
+                    className="flex items-center justify-center py-3 rounded-xl text-white/60 text-[12px] font-bold tracking-[.08em] uppercase hover:text-white hover:bg-white/5 transition-all"
                   >
                     Login
                   </Link>
                   <Link
                     href="/signup"
                     onClick={() => setIsOpen(false)}
-                    className="flex items-center justify-center py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-white font-bold text-[13px] tracking-[.1em] uppercase shadow-[0_0_20px_rgba(123,92,240,0.35)]"
+                    className="flex items-center justify-center py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-white font-bold text-[12px] tracking-[.1em] uppercase shadow-[0_4px_15px_rgba(124,58,237,0.3)]"
                   >
                     Join Now →
                   </Link>
@@ -305,7 +322,7 @@ export default function Navbar() {
         )}
       </AnimatePresence>
 
-      {/* Backdrop for dropdown */}
+      {/* Dropdown background layer listener */}
       {dropdownOpen && (
         <div
           className="fixed inset-0 z-[-1]"
