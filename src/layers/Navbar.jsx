@@ -26,7 +26,7 @@ export default function Navbar() {
     setDropdownOpen(false);
   };
 
-  const dashboardPath = `/dashboard/${user?.role ?? 'member'}`;
+  // const dashboardPath = `/dashboard/${user?.role ?? 'member'}`;
 
   const navLinks = [
     { label: 'Home',        href: '/',            icon: <FiHome size={13} /> },
@@ -142,7 +142,7 @@ export default function Navbar() {
                           {/* Dashboard link */}
                           <div className="p-2">
                             <Link
-                              href={dashboardPath}
+                              href={`dashboard/${user?.role}`}
                               onClick={() => setDropdownOpen(false)}
                               className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[12px] font-semibold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-150 tracking-wide uppercase"
                             >
@@ -246,7 +246,7 @@ export default function Navbar() {
                 <>
                   {/* Dashboard */}
                   <Link
-                    href={dashboardPath}
+                    href={`dashboard/${user?.role}`}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-[13px] font-semibold tracking-[.07em] uppercase text-purple-300 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/18 transition-all duration-200"
                   >

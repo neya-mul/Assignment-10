@@ -15,6 +15,7 @@ export default function Details({ cls }) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
+  const userRole = user?.role
 
   // ── Fix hydration: start everything false, only run checks after mount ──
   const [mounted, setMounted]         = useState(false);
@@ -241,29 +242,36 @@ export default function Details({ cls }) {
               </div>
 
               {/* Book Now */}
-              <button
-                onClick={handleBookNow}
-                disabled={bookDisabled}
-                className={`
-                  w-full flex items-center justify-center gap-2
-                  py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
-                  transition-all duration-200
-                  ${mounted && alreadyBooked
-                    ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
-                    : bookDisabled
-                    ? "bg-purple-500/20 text-purple-300/50 cursor-wait"
-                    : "bg-gradient-to-r from-violet-600 to-purple-500 text-white shadow-[0_0_24px_rgba(123,92,240,0.45)] hover:shadow-[0_0_32px_rgba(123,92,240,0.65)] hover:scale-[1.02]"
-                  }
-                `}
-              >
-                {bookDisabled ? (
-                  <span className="animate-pulse">Checking...</span>
-                ) : mounted && alreadyBooked ? (
-                  <><FiCheckCircle size={15} /> Already Booked</>
-                ) : (
-                  <><FiCreditCard size={15} /> Book Now</>
-                )}
-              </button>
+            {/* Assuming you have access to a userRole variable, e.g., 'admin', 'trainer', or 'member' */}
+<button
+  onClick={handleBookNow}
+  // 1. Disable if already disabled, OR if the user is a trainer
+  disabled={bookDisabled || userRole === 'trainer'} 
+  className={`
+    w-full flex items-center justify-center gap-2
+    py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
+    transition-all duration-200
+    ${userRole === 'trainer'
+      ? "bg-red-950/20 border border-red-500/20 text-red-400/40 cursor-not-allowed" // Style for trainers
+      : mounted && alreadyBooked
+      ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
+      : bookDisabled
+      ? "bg-purple-500/20 text-purple-300/50 cursor-wait"
+      : "bg-gradient-to-r from-violet-600 to-purple-500 text-white shadow-[0_0_24px_rgba(123,92,240,0.45)] hover:shadow-[0_0_32px_rgba(123,92,240,0.65)] hover:scale-[1.02]"
+    }
+  `}
+>
+  {/* 3. Conditional text/icons based on role and status */}
+  {userRole === 'trainer' ? (
+    <>Members Only</>
+  ) : bookDisabled ? (
+    <span className="animate-pulse">Checking...</span>
+  ) : mounted && alreadyBooked ? (
+    <><FiCheckCircle size={15} /> Already Booked</>
+  ) : (
+    <><FiCreditCard size={15} /> Book Now</>
+  )}
+</button>
 
               {mounted && alreadyBooked && (
                 <p className="flex items-center justify-center gap-1.5 mt-2.5 text-[11px] text-white/30">
