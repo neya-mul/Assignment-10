@@ -15,18 +15,18 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  if (pathname.includes('dashboard')) return null;
-
+  // Hooks must be called at the top level, before any conditional returns
   const { data: session } = authClient.useSession();
   const user = session?.user;
+
+  // Early return is now safely placed AFTER all hooks have been declared
+  if (pathname.includes('dashboard')) return null;
 
   const handleLogout = async () => {
     await authClient.signOut();
     setIsOpen(false);
     setDropdownOpen(false);
   };
-
-  // const dashboardPath = `/dashboard/${user?.role ?? 'member'}`;
 
   const navLinks = [
     { label: 'Home',        href: '/',            icon: <FiHome size={13} /> },
