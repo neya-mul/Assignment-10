@@ -107,7 +107,7 @@ export default function SignupPage() {
   const isSubmitting = uploading || loading;
 
   return (
-    <div className="min-h-[calc(100vh-66px)] flex items-center justify-center bg-[#08060f] px-4 py-14">
+    <div className="min-h-[calc(100vh-66px)] flex items-center justify-center bg-[#08060f] px-4 py-30 lg:py-25">
 
       {/* Background glow blobs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
@@ -125,7 +125,7 @@ export default function SignupPage() {
         <div className="bg-[#0e0b1f]/80 backdrop-blur-xl border border-purple-500/20 rounded-2xl p-8 shadow-[0_0_60px_rgba(123,92,240,0.1)]">
 
           {/* Header */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-8 ">
             <div
               className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-black text-xl mx-auto mb-4"
               style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
@@ -141,7 +141,7 @@ export default function SignupPage() {
             <p className="text-white/40 text-sm">Stride Today. Strong Tomorrow.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-3">
 
             {/* Profile Image Upload */}
             <div className="flex flex-col items-center mb-2">
