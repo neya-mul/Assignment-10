@@ -172,17 +172,7 @@ const Banner = () => {
 
         {/* ── LEFT TEXT — takes 50% on desktop ── */}
 
-        <div className="flex-1 flex flex-col justify-center
-
-px-6 sm:px-10 lg:pl-16 xl:pl-24
-
-pt-24 pb-4 lg:py-0
-
-items-center lg:items-start
-
-text-center lg:text-left
-
-z-20">
+        <div className="flex-1 flex flex-col justify-center px-6 sm:px-10 lg:pl-16 xl:pl-24 pt-24 pb-4 lg:py-0 items-center lg:items-start text-center lg:text-left z-20">
 
           <motion.p
 

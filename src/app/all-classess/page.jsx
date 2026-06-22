@@ -28,7 +28,7 @@ const AllClasses = async () => {
 
 
   return (
-    <div className="min-h-screen bg-[#05020a] text-white py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#05020a] pt-30 text-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-10">
         
         {/* ── Section Header Layout ── */}
