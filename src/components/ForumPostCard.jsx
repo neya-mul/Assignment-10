@@ -39,7 +39,7 @@ export default function ForumPostCard({ post }) {
           {/* Metadata Block */}
           <div className="flex items-center gap-3 text-[11px] font-medium tracking-wide text-zinc-500 uppercase">
             <span className="flex items-center gap-1.5 text-purple-400 bg-purple-500/5 px-2 py-0.5 rounded border border-purple-500/10">
-              <FiUser className="text-[10px]" /> {userName}
+              <FiUser className="text-[10px]" /> {userName ? userName : 'Unknown'}
             </span>
             {/* <span className="flex items-center gap-1">
               <FiClock /> {formattedDate}

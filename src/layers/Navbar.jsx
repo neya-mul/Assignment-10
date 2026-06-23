@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
+import logo from '../../public/logo.png'
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -9,6 +10,7 @@ import {
 } from 'react-icons/fi';
 import { authClient } from '@/lib/auth-client';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -44,9 +46,9 @@ export default function Navbar() {
   };
 
   const navLinks = [
-    { label: 'Home',        href: '/',            icon: <FiHome size={13} /> },
+    { label: 'Home', href: '/', icon: <FiHome size={13} /> },
     { label: 'All Classes', href: '/all-classess', icon: <FiGrid size={13} /> },
-    { label: 'Community',   href: '/all-forums',    icon: <FiUsers size={13} /> },
+    { label: 'Community', href: '/all-forums', icon: <FiUsers size={13} /> },
   ];
 
   const isActive = (href) =>
@@ -59,11 +61,11 @@ export default function Navbar() {
         - Transparent when at the top (over the banner)
         - Fades smoothly into deep dark purple/black color on scroll
       */}
-      <div 
+      <div
         className={`
           transition-all duration-500 ease-in-out border-b
-          ${isScrolled 
-            ? 'bg-[#050816] bg-gradient-to-b from-[#1e0b3a]/40 to-transparent backdrop-blur-xl border-purple-500/15 shadow-[0_10px_40px_rgba(5,8,22,0.8)] h-[72px]' 
+          ${isScrolled
+            ? 'bg-[#050816] bg-gradient-to-b from-[#1e0b3a]/40 to-transparent backdrop-blur-xl border-purple-500/15 shadow-[0_10px_40px_rgba(5,8,22,0.8)] h-[72px]'
             : 'bg-transparent border-transparent h-[80px]'
           }
         `}
@@ -71,22 +73,34 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full">
 
-            {/* ── Logo ── */}
-            <Link href="/" className="flex items-center gap-2.5 flex-shrink-0 group">
-              <div
-                className="w-8 h-8 bg-gradient-to-br from-violet-600 to-purple-500 flex items-center justify-center text-white font-black text-[15px] flex-shrink-0 shadow-[0_0_15px_rgba(124,58,237,0.6)] group-hover:scale-105 transition-transform duration-300"
-                style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
-              >
-                S
-              </div>
-              <span
-                className="font-black text-[22px] tracking-[.18em] bg-gradient-to-r from-white via-purple-200 to-violet-400 bg-clip-text text-transparent uppercase transition-all duration-300 group-hover:opacity-90"
-                style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
-              >
-                STRYDE
-              </span>
-            </Link>
 
+
+
+
+            {/* ── Logo ── */}
+           {/* ── Logo ── */}
+<Link href="/" className="flex items-center gap-2 flex-shrink-0 select-none group">
+  {/* The Image Container - We use overflow-visible so the scaled-up logo can breathe */}
+  <div className="relative w-16 h-14 overflow-visible flex items-center justify-center">
+    <Image
+      src={logo}
+      alt="FitnessCafe Logo"
+      fill
+      priority
+      sizes="120px"
+      /* scale-150 or scale-[1.75] forces the graphic out of its small bounding box */
+      className="object-contain scale-[1.75] transform transition-transform duration-300 group-hover:scale-[1.85]"
+    />
+  </div>
+  
+  {/* The Text Brand Typography */}
+  {/* <span
+    className="font-black text-[24px] tracking-[.15em] bg-gradient-to-r from-white via-purple-100 to-violet-400 bg-clip-text text-transparent uppercase transition-all duration-300 group-hover:opacity-95 pl-4"
+    style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
+  >
+    FitnessCafe
+  </span> */}
+</Link>
             {/* ── Desktop nav links ── */}
             <div className="hidden md:flex items-center gap-1">
               {navLinks.map(({ label, href, icon }) => {
