@@ -46,7 +46,7 @@ export default function Navbar() {
   const navLinks = [
     { label: 'Home',        href: '/',            icon: <FiHome size={13} /> },
     { label: 'All Classes', href: '/all-classess', icon: <FiGrid size={13} /> },
-    { label: 'Community',   href: '/community',    icon: <FiUsers size={13} /> },
+    { label: 'Community',   href: '/all-forums',    icon: <FiUsers size={13} /> },
   ];
 
   const isActive = (href) =>
