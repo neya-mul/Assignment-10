@@ -4,11 +4,16 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiFileText, FiImage, FiCpu, FiMessageSquare } from 'react-icons/fi';
 import { uploadToImgBB } from '@/lib/iamgeUpload/imageUpload';
+import { useSession } from '@/lib/auth-client';
 
 export default function AddForumPost() {
+  const { data: session } = useSession()
+  const user = session?.user
   const [imageFile, setImageFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
+
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -29,20 +34,23 @@ export default function AddForumPost() {
         title: e.target.title.value,
         description: e.target.description.value,
         image: imageUrl,
+        userName:user?.name,
+        userEmail:user?.email,
+        userId:user?.id
       };
 
-      // console.log(forumPost);
+      console.log(forumPost);
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`,{
-        method:'POST',
-        headers:{
-          'content-type':'application/json'
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`, {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
         },
-        body:JSON.stringify(forumPost)
+        body: JSON.stringify(forumPost)
       })
-      const data =await res.json()
+      const data = await res.json()
       console.log(data);
-      
+
 
       e.target.reset();
       setStatusMessage("Post created successfully!");
