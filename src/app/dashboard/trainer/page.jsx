@@ -1,17 +1,20 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { FiSliders, FiUsers, FiAward, FiMail, FiZap, FiTarget } from 'react-icons/fi';
+import { FiSliders, FiUsers, FiAward, FiMail, FiZap, FiTarget, FiLoader } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
 
 export default function TrainerOverview() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // Mock state tracking target metrics for the Trainer portfolio
+  // State management for live API values
+  const [myClasses, setMyClasses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Mock state tracking target metrics for the Trainer portfolio (Students kept static)
   const [trainerStats] = useState({
-    totalClassesCreated: 6,
     totalStudentsEnrolled: 142,
   });
 
@@ -19,6 +22,27 @@ export default function TrainerOverview() {
   const userInitials = user?.name 
     ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
     : 'T';
+
+  // Fetch classes safely on the client side using useEffect
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const fetchTrainerClasses = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-classes/${user.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          setMyClasses(data);
+        }
+      } catch (error) {
+        console.error("Failed to synchronize deployed training matrices:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchTrainerClasses();
+  }, [user?.id]);
 
   return (
     <div className="space-y-8">
@@ -34,19 +58,25 @@ export default function TrainerOverview() {
 
       {/* Visual Statistics Dashboard Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        {/* Metric Card: Classes Created */}
+        {/* Metric Card: Classes Created (Dynamic) */}
         <div className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.3)] relative overflow-hidden group">
           <div className="absolute top-[-20%] right-[-10%] w-24 h-24 bg-violet-600/10 rounded-full blur-xl group-hover:bg-violet-600/20 transition-all" />
           <div className="space-y-1">
             <span className="text-[10px] uppercase font-bold text-white/40 tracking-widest block">Total Classes Deployed</span>
-            <span className="text-3xl font-black text-white font-mono tracking-tight">{trainerStats.totalClassesCreated}</span>
+            <span className="text-3xl font-black text-white font-mono tracking-tight flex items-center gap-2">
+              {isLoading ? (
+                <FiLoader className="animate-spin text-purple-400 text-xl" />
+              ) : (
+                myClasses.length
+              )}
+            </span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
             <FiTarget size={20} />
           </div>
         </div>
 
-        {/* Metric Card: Students Enrolled */}
+        {/* Metric Card: Students Enrolled (Static as requested) */}
         <div className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-6 flex items-center justify-between shadow-[0_4px_30px_rgba(0,0,0,0.3)] relative overflow-hidden group">
           <div className="absolute top-[-20%] right-[-10%] w-24 h-24 bg-emerald-600/10 rounded-full blur-xl group-hover:bg-emerald-600/20 transition-all" />
           <div className="space-y-1">
