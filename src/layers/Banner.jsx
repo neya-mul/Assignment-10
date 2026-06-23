@@ -437,13 +437,7 @@ always touching the ground.
 
 */}
 
-          <Image
-
-            src={boy}
-
-            alt="Fitness Hero"
-
-            priority
+          <Image src={boy} alt="Fitness Hero" priority
 
             className="
 
