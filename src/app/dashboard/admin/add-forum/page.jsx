@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiUploadCloud, FiBookOpen, FiImage, FiPlusCircle } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 export default function AddForumPost() {
   const [title, setTitle] = useState('');
@@ -30,7 +31,7 @@ export default function AddForumPost() {
         setImageUrl(resData.data.url);
       }
     } catch (err) {
-      console.error("Image upload failed:", err);
+      toast.error("Image upload failed:", err);
     } finally {
       setIsUploading(false);
     }
@@ -38,8 +39,8 @@ export default function AddForumPost() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ title, description, imageUrl });
-    alert("Forum Post dispatch broadcast generated successfully.");
+    // console.log({ title, description, imageUrl });
+    toast("Forum Post dispatch broadcast generated successfully.");
     setTitle(''); setDescription(''); setImageUrl('');
   };
 

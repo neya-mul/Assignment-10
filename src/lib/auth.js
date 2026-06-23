@@ -20,6 +20,9 @@ export const auth = betterAuth({
       },
       isPro:{
         defaultValue:false
+      },
+       status:{
+        defaultValue:'active'
       }
     }
   }

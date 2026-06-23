@@ -7,8 +7,9 @@ export default function ManageUsers() {
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // 1. Fetch Users on Component Mount
   useEffect(() => {
-    const findUser = async () => {
+    const fetchUsers = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL}users`);
         const allUsers = await res.json();
@@ -17,15 +18,63 @@ export default function ManageUsers() {
         console.error("Failed to fetch users:", error);
       }
     };
-    findUser();
-  }, []); // <-- Kept the empty dependency array to prevent the infinite loop!
+    fetchUsers();
+  }, []);
 
-  console.log(users);
+  // 2. Toggle Status Function (Block / Unblock)
+  const toggleUserStatus = async (userId, currentStatus) => {
+    const newStatus = currentStatus === 'active' ? 'blocked' : 'active';
 
-  // Filter criteria 
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (res.ok) {
+        // Update local state instantly if backend succeeds
+        setUsers(users.map((user) =>
+          user._id === userId ? { ...user, status: newStatus } : user
+        ));
+      } else {
+        console.error("Failed to update user status in the database.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  // 3. Promote User to Admin Function
+  const promoteToAdmin = async (userId, userName) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}users/${userId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'admin' }),
+      });
+
+      if (res.ok) {
+        // Update local state instantly if backend succeeds
+        setUsers(users.map((user) =>
+          user._id === userId ? { ...user, role: 'admin' } : user
+        ));
+      } else {
+        console.error("Failed to promote user to admin in the database.");
+      }
+    } catch (error) {
+      console.error("Network error:", error);
+    }
+  };
+
+  // 4. Filter criteria for search bar
   const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   return (
@@ -60,16 +109,16 @@ export default function ManageUsers() {
       {/* 1. Mobile & Tablet Card Layout Feed (Visible below md viewport break) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden">
         {filteredUsers.length > 0 ? (
-          filteredUsers.map((user, ind) => (
+          filteredUsers.map((user) => (
             <div
-              key={ind}
+              key={user._id}
               className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-5 space-y-4 shadow-[0_4px_30px_rgba(0,0,0,0.4)]"
             >
               {/* Identity & Status */}
               <div className="flex items-start justify-between gap-3">
                 <div className="flex items-center gap-3 min-w-0">
                   <div className="w-9 h-9 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                    {user.name.slice(0, 2)}
+                    {user.name?.slice(0, 2) || '?'}
                   </div>
                   <div className="min-w-0">
                     <h3 className="font-semibold text-white/90 truncate text-sm">{user.name}</h3>
@@ -81,7 +130,7 @@ export default function ManageUsers() {
                 <div className="flex items-center gap-1 shrink-0 bg-zinc-950/40 px-2 py-1 rounded-lg border border-white/5">
                   <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-red-400 animate-pulse shadow-[0_0_8px_#f87171]'}`} />
                   <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60">
-                    {user.status === 'active' ? 'Live' : 'Banned'}
+                    {user.status === 'active' ? 'Live' : 'Blocked'}
                   </span>
                 </div>
               </div>
@@ -95,20 +144,24 @@ export default function ManageUsers() {
                     ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
                     : 'bg-blue-500/10 border border-blue-500/20 text-blue-400'
                   }`}>
-                  {user.role}
+                  {user.role || 'user'}
                 </span>
               </div>
 
               {/* Interactive Operation Action Strip */}
               <div className="flex items-center gap-2 pt-1">
                 {user.role !== 'admin' && (
-                  <button className="flex-1 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white transition-all text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5">
+                  <button 
+                    onClick={() => promoteToAdmin(user._id, user.name)}
+                    className="flex-1 py-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white transition-all text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5"
+                  >
                     <FiShield size={12} />
                     <span>Admin</span>
                   </button>
                 )}
 
                 <button
+                  onClick={() => toggleUserStatus(user._id, user.status)}
                   className={`flex-1 py-2 rounded-xl border text-[11px] font-bold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all ${user.status === 'active'
                     ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'
                     : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
@@ -152,12 +205,12 @@ export default function ManageUsers() {
             <tbody className="divide-y divide-purple-500/5 text-sm">
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
-                  <tr key={user.id} className="hover:bg-purple-500/5 transition-colors duration-150">
+                  <tr key={user._id} className="hover:bg-purple-500/5 transition-colors duration-150">
                     {/* Name column */}
                     <td className="py-4 px-6 font-semibold text-white/90">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs uppercase">
-                          {user.name.slice(0, 2)}
+                          {user.name?.slice(0, 2) || '?'}
                         </div>
                         <span>{user.name}</span>
                       </div>
@@ -174,7 +227,7 @@ export default function ManageUsers() {
                           ? 'bg-amber-500/10 border border-amber-500/20 text-amber-400'
                           : 'bg-blue-500/10 border border-blue-500/20 text-blue-400'
                         }`}>
-                        {user.role}
+                        {user.role || 'user'}
                       </span>
                     </td>
 
@@ -183,7 +236,7 @@ export default function ManageUsers() {
                       <div className="flex items-center gap-1.5">
                         <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-red-400 animate-pulse shadow-[0_0_8px_#f87171]'}`} />
                         <span className={`text-xs font-bold uppercase tracking-wider ${user.status === 'active' ? 'text-emerald-400/80' : 'text-red-400/80'}`}>
-                          {user.status === 'active' ? 'Active' : 'Soft Blocked'}
+                          {user.status === 'active' ? 'Active' : 'Blocked'}
                         </span>
                       </div>
                     </td>
@@ -194,6 +247,7 @@ export default function ManageUsers() {
                         {/* Make Admin Trigger Button */}
                         {user.role !== 'admin' && (
                           <button
+                            onClick={() => promoteToAdmin(user._id, user.name)}
                             className="p-2 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 hover:bg-gradient-to-r hover:from-violet-600 hover:to-purple-500 hover:text-white hover:border-transparent transition-all duration-200 text-xs font-bold uppercase tracking-wider flex items-center gap-1"
                             title="Promote account status to system admin"
                           >
@@ -204,6 +258,7 @@ export default function ManageUsers() {
 
                         {/* Block / Unblock Toggle Button */}
                         <button
+                          onClick={() => toggleUserStatus(user._id, user.status)}
                           className={`p-2 rounded-xl border text-xs font-bold uppercase tracking-wider flex items-center gap-1 transition-all duration-200 ${user.status === 'active'
                             ? 'bg-red-500/10 border-red-500/20 text-red-400 hover:bg-red-500/20'
                             : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'

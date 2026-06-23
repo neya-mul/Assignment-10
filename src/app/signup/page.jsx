@@ -126,17 +126,14 @@ export default function SignupPage() {
 
           {/* Header */}
           <div className="text-center mb-8 ">
-            <div
-              className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-black text-xl mx-auto mb-4"
-              style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
-            >
-              S
+            <div className="max-w-[100px] mx-auto" >
+              <img src="/logo.png" alt="" />
             </div>
             <h2
               className="text-3xl font-black tracking-[.12em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent uppercase mb-1"
               style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
             >
-              Join STRYDE
+              Join FitnessCafe
             </h2>
             <p className="text-white/40 text-sm">Stride Today. Strong Tomorrow.</p>
           </div>

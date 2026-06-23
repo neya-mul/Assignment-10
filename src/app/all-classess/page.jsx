@@ -16,13 +16,13 @@ const AllClasses = async () => {
     
     if (res.ok) {
       classes = await res.json();
-      console.log(classes);
+      // console.log(classes);
       
     } else {
-      console.error(`Data transmission failure code: ${res.status}`);
+      // console.error(`Data transmission failure code: ${res.status}`);
     }
   } catch (error) {
-    console.error("Critical connection failure to server infrastructure clusters:", error);
+    // console.error("Critical connection failure to server infrastructure clusters:", error);
   }
 
 
