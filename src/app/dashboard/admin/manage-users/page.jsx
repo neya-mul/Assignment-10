@@ -130,7 +130,7 @@ export default function ManageUsers() {
                 <div className="flex items-center gap-1 shrink-0 bg-zinc-950/40 px-2 py-1 rounded-lg border border-white/5">
                   <span className={`w-1.5 h-1.5 rounded-full ${user.status === 'active' ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]' : 'bg-red-400 animate-pulse shadow-[0_0_8px_#f87171]'}`} />
                   <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/60">
-                    {user.status === 'active' ? 'Live' : 'Blocked'}
+                    {user.status === 'active' ? 'Active' : 'Blocked'}
                   </span>
                 </div>
               </div>
