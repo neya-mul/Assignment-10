@@ -30,7 +30,7 @@ export default function DashboardLayout({ children }) {
   const dashboardLinks = {
     member: [
       { name: 'Overview', href: '/dashboard/member', icon: <FaTachometerAlt /> },
-      { name: 'Booked Classes', href: '/dashboard/member/booked-classes', icon: <FaCalendarCheck /> }, // Fixed typo: -clases to -classes
+      { name: 'Booked Classes', href: '/dashboard/member/booked-clases', icon: <FaCalendarCheck /> }, // Fixed typo: -clases to -classes
       { name: 'Apply as Trainer', href: '/dashboard/member/apply-as-trainer', icon: <FaUserTie /> },
       { name: 'Favourite', href: '/dashboard/member/favourites', icon: <FaHeart /> },
     ],

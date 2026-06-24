@@ -15,15 +15,16 @@ export default function Details({ cls }) {
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
-  const userRole = user?.role
+  const userRole = user?.role;
 
   // ── Fix hydration: start everything false, only run checks after mount ──
-  const [mounted, setMounted]         = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [alreadyBooked, setAlreadyBooked] = useState(false);
-  const [isFavorite, setIsFavorite]       = useState(false);
-  const [checkingBook, setCheckingBook]   = useState(false);
-  const [checkingFav, setCheckingFav]     = useState(false);
-  const [favLoading, setFavLoading]       = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [checkingBook, setCheckingBook] = useState(false);
+  const [checkingFav, setCheckingFav] = useState(false);
+  const [favLoading, setFavLoading] = useState(false);
+  const [checkoutLoading, setCheckoutLoading] = useState(false); // Track Stripe routing loading
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -36,30 +37,45 @@ export default function Details({ cls }) {
     fetch(`/api/bookings/check?classId=${cls._id}&userId=${user.id}`)
       .then(r => r.json())
       .then(d => setAlreadyBooked(!!d.booked))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setCheckingBook(false));
 
     fetch(`/api/favorites/check?classId=${cls._id}&userId=${user.id}`)
       .then(r => r.json())
       .then(d => setIsFavorite(!!d.favorited))
-      .catch(() => {})
+      .catch(() => { })
       .finally(() => setCheckingFav(false));
 
   }, [mounted, user, cls?._id]);
 
-  const handleBookNow = () => {
-    if (!user) {
-      toast.error("Please log in to book a class.");
-      router.push("/login");
-      return;
-    }
-    if (alreadyBooked) {
-      toast.error("You have already booked this class.");
-      return;
-    }
-    router.push(`/payment/${cls._id}`);
-  };
+  // Integrated Stripe redirect function
+  const handleBookNow = async () => {
+    setCheckoutLoading(true);
+    try {
+      const res = await fetch("/api/checkout_sessions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          classId: cls._id,       
+          className: cls.className, 
+          price: cls.price,
+          userName:user?.name,
+          userEmail:user?.email
+        })
+      });
 
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url; 
+      } else {
+        toast.error(data.error);
+        setCheckoutLoading(false);
+      }
+    } catch (error) {
+      toast.error("Connection error");
+      setCheckoutLoading(false);
+    }
+  };
   const handleFavorite = async () => {
     if (!user) {
       toast.error("Please log in to save favourites.");
@@ -100,21 +116,21 @@ export default function Details({ cls }) {
 
   const badges = [
     { icon: <FiBarChart2 size={13} />, label: "Difficulty", value: cls.difficulty },
-    { icon: <FiClock size={13} />,     label: "Duration",   value: `${cls.duration} min` },
-    { icon: <FiTag size={13} />,       label: "Category",   value: cls.category },
-    { icon: <FiUser size={13} />,      label: "Trainer",    value: cls.trainerName },
-    { icon: <FiCalendar size={13} />,  label: "Schedule",   value: cls.scheduleTime },
-    { icon: <FiDollarSign size={13} />,label: "Price",      value: `৳ ${cls.price}` },
+    { icon: <FiClock size={13} />, label: "Duration", value: `${cls.duration} min` },
+    { icon: <FiTag size={13} />, label: "Category", value: cls.category },
+    { icon: <FiUser size={13} />, label: "Trainer", value: cls.trainerName },
+    { icon: <FiCalendar size={13} />, label: "Schedule", value: cls.scheduleTime },
+    { icon: <FiDollarSign size={13} />, label: "Price", value: `৳ ${cls.price}` },
   ];
 
   const difficultyColor =
-    cls.difficulty === "Beginner"     ? "text-green-400 bg-green-400/10 border-green-400/25" :
-    cls.difficulty === "Intermediate" ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/25" :
-                                        "text-red-400 bg-red-400/10 border-red-400/25";
+    cls.difficulty === "Beginner" ? "text-green-400 bg-green-400/10 border-green-400/25" :
+      cls.difficulty === "Intermediate" ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/25" :
+        "text-red-400 bg-red-400/10 border-red-400/25";
 
-  // Button disabled state — only after mount to avoid hydration mismatch
-  const bookDisabled  = mounted && checkingBook;
-  const favDisabled   = mounted && (checkingFav || favLoading);
+  // Combined button lock state
+  const bookDisabled = mounted && (checkingBook || checkoutLoading);
+  const favDisabled = mounted && (checkingFav || favLoading);
 
   return (
     <div className="min-h-screen bg-[#050816] py-16 px-4">
@@ -241,37 +257,36 @@ export default function Details({ cls }) {
                 <span className="text-white font-black text-4xl leading-none">{cls.price}</span>
               </div>
 
-              {/* Book Now */}
-            {/* Assuming you have access to a userRole variable, e.g., 'admin', 'trainer', or 'member' */}
-<button
-  onClick={handleBookNow}
-  // 1. Disable if already disabled, OR if the user is a trainer
-  disabled={bookDisabled || userRole === 'trainer'} 
-  className={`
-    w-full flex items-center justify-center gap-2
-    py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
-    transition-all duration-200
-    ${userRole === 'trainer'
-      ? "bg-red-950/20 border border-red-500/20 text-red-400/40 cursor-not-allowed" // Style for trainers
-      : mounted && alreadyBooked
-      ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
-      : bookDisabled
-      ? "bg-purple-500/20 text-purple-300/50 cursor-wait"
-      : "bg-gradient-to-r from-violet-600 to-purple-500 text-white shadow-[0_0_24px_rgba(123,92,240,0.45)] hover:shadow-[0_0_32px_rgba(123,92,240,0.65)] hover:scale-[1.02]"
-    }
-  `}
->
-  {/* 3. Conditional text/icons based on role and status */}
-  {userRole === 'trainer' ? (
-    <>Members Only</>
-  ) : bookDisabled ? (
-    <span className="animate-pulse">Checking...</span>
-  ) : mounted && alreadyBooked ? (
-    <><FiCheckCircle size={15} /> Already Booked</>
-  ) : (
-    <><FiCreditCard size={15} /> Book Now</>
-  )}
-</button>
+              {/* Cleaned interactive booking button (No broken native HTML form wraps) */}
+              <button
+                onClick={handleBookNow}
+                disabled={bookDisabled || userRole === 'trainer'}
+                className={`
+                  w-full flex items-center justify-center gap-2
+                  py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
+                  transition-all duration-200
+                  ${userRole === 'trainer'
+                    ? "bg-red-950/20 border border-red-500/20 text-red-400/40 cursor-not-allowed"
+                    : mounted && alreadyBooked
+                      ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
+                      : bookDisabled
+                        ? "bg-purple-500/20 text-purple-300/50 cursor-wait"
+                        : "bg-gradient-to-r from-violet-600 to-purple-500 text-white shadow-[0_0_24px_rgba(123,92,240,0.45)] hover:shadow-[0_0_32px_rgba(123,92,240,0.65)] hover:scale-[1.02]"
+                  }
+                `}
+              >
+                {userRole === 'trainer' ? (
+                  <>Members Only</>
+                ) : checkoutLoading ? (
+                  <span className="animate-pulse">Connecting Stripe...</span>
+                ) : checkingBook ? (
+                  <span className="animate-pulse">Checking...</span>
+                ) : mounted && alreadyBooked ? (
+                  <><FiCheckCircle size={15} /> Already Booked</>
+                ) : (
+                  <><FiCreditCard size={15} /> Book Now</>
+                )}
+              </button>
 
               {mounted && alreadyBooked && (
                 <p className="flex items-center justify-center gap-1.5 mt-2.5 text-[11px] text-white/30">
@@ -297,8 +312,8 @@ export default function Details({ cls }) {
                   ${mounted && isFavorite
                     ? "bg-pink-500/12 border-pink-500/35 text-pink-400 hover:bg-pink-500/20"
                     : favDisabled
-                    ? "bg-white/5 border-white/10 text-white/25 cursor-wait"
-                    : "bg-white/5 border-purple-500/25 text-white/65 hover:bg-purple-500/10 hover:border-purple-400 hover:text-white hover:scale-[1.02]"
+                      ? "bg-white/5 border-white/10 text-white/25 cursor-wait"
+                      : "bg-white/5 border-purple-500/25 text-white/65 hover:bg-purple-500/10 hover:border-purple-400 hover:text-white hover:scale-[1.02]"
                   }
                 `}
               >
@@ -309,8 +324,8 @@ export default function Details({ cls }) {
                 {favDisabled
                   ? "Loading..."
                   : mounted && isFavorite
-                  ? "Saved to Favourites"
-                  : "Add to Favourites"
+                    ? "Saved to Favourites"
+                    : "Add to Favourites"
                 }
               </button>
             </div>
