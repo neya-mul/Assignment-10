@@ -9,7 +9,6 @@ export default async function FeatureClasses() {
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_URL}all-classes`)
     const cls = await res.json()
-    console.log(cls[0], 'from new ');
 
     return (
            <section className="bg-[#050816] py-20 px-4 sm:px-6 lg:px-12 relative overflow-hidden">

@@ -8,8 +8,17 @@ export async function POST(req) {
     const origin = headersList.get('origin')
 
     const body = await req.json();
-    // ফ্রন্টএন্ড থেকে পাঠানো ইউজারের ডেটা রিসিভ করা হলো
-    const { classId, className, price, userEmail, userName } = body;
+    const { classId, className, trainerName, price, userEmail, userName } = body;
+    const data = {
+      classId,
+      className,
+      trainerName,
+      price,
+      userEmail,
+      userName
+    }
+    // console.log(data);
+
 
     if (!price) {
       return NextResponse.json({ error: 'Price is required.' }, { status: 400 })
@@ -44,10 +53,25 @@ export async function POST(req) {
       cancel_url: `${origin}/classes/${classId}`,
       metadata: {
         classId: classId,
-        buyerName: userName || "Anonymous",   
-        buyerEmail: userEmail || "No Email"   
+        buyerName: userName || "Anonymous",
+        buyerEmail: userEmail || "No Email"
       }
     });
+    console.log(session, 'from session', data);
+
+
+
+    if (session.url) {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-booked-classes`, {
+        method:'POST',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify(data)
+      })
+      res.json()
+    }
+
 
     return NextResponse.json({ url: session.url })
   } catch (err) {

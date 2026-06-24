@@ -28,6 +28,9 @@ export default function Details({ cls }) {
 
   useEffect(() => { setMounted(true); }, []);
 
+  console.log(cls);
+  
+
   useEffect(() => {
     if (!mounted || !user || !cls?._id) return;
 
@@ -56,17 +59,18 @@ export default function Details({ cls }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          classId: cls._id,       
-          className: cls.className, 
+          classId: cls._id,
+          trainerName: cls.trainerName,
+          className: cls.className,
           price: cls.price,
-          userName:user?.name,
-          userEmail:user?.email
+          userName: user?.name,
+          userEmail: user?.email
         })
       });
 
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url; 
+        window.location.href = data.url;
       } else {
         toast.error(data.error);
         setCheckoutLoading(false);
@@ -76,6 +80,8 @@ export default function Details({ cls }) {
       setCheckoutLoading(false);
     }
   };
+
+
   const handleFavorite = async () => {
     if (!user) {
       toast.error("Please log in to save favourites.");
