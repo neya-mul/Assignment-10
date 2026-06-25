@@ -46,7 +46,6 @@ export default function FavoriteClasses() {
       const data = await res.json();
 
       if (data.success || data.deletedCount > 0) {
-        // ✨ Animate card removal immediately by filtering the state
         setFavorites((prev) => prev.filter(item => (item.classId !== classId && item._id !== classId)));
         
         // Show notification toast

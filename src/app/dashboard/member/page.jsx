@@ -6,6 +6,8 @@ import { FiCalendar, FiHeart, FiUser, FiMail, FiShield, FiAlertTriangle, FiCheck
 import { useSession } from '@/lib/auth-client';
 
 export default function MemberOverview() {
+  const [favorites, setFavorites] = useState([]);
+
   const { data: session } = useSession();
   const user = session?.user;
 
@@ -30,7 +32,21 @@ export default function MemberOverview() {
   }, [user?.email]);
 
   // console.log(typeof totalClasses);
-  
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    const favouriteFunction = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`);
+        const data = await res.json();
+        setFavorites(data);
+      } catch (err) {
+        console.error("Failed to load favorites stream:", err);
+      }
+    };
+    favouriteFunction();
+  }, [user?.id]); // Optimized dependency array to look at ID directly
 
   // Mock states reflecting the specified target parameters
   const [stats] = useState({
@@ -76,7 +92,7 @@ export default function MemberOverview() {
           <div className="absolute top-[-20%] right-[-10%] w-24 h-24 bg-pink-600/10 rounded-full blur-xl group-hover:bg-pink-600/20 transition-all" />
           <div className="space-y-1">
             <span className="text-[10px] uppercase font-bold text-white/40 tracking-widest block">Total Favorites</span>
-            <span className="text-3xl font-black text-white font-mono tracking-tight">{stats.totalFavorites}</span>
+            <span className="text-3xl font-black text-white font-mono tracking-tight">{favorites.length}</span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-pink-500/10 border border-pink-500/20 text-pink-400 flex items-center justify-center">
             <FiHeart size={20} />
