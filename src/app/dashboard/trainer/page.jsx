@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FiSliders, FiUsers, FiAward, FiMail, FiZap, FiTarget, FiLoader } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
+import toast from 'react-hot-toast';
 
 export default function TrainerOverview() {
   const { data: session } = useSession();
@@ -35,7 +36,7 @@ export default function TrainerOverview() {
           setMyClasses(data);
         }
       } catch (error) {
-        console.error("Failed to synchronize deployed training matrices:", error);
+        toast.error("Failed to synchronize deployed training matrices:", error);
       } finally {
         setIsLoading(false);
       }
@@ -89,7 +90,6 @@ export default function TrainerOverview() {
         </div>
       </div>
 
-      {/* Profile Details Card Console */}
       <div className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-6 md:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.4)] space-y-6">
         <div>
           <h2 className="text-sm font-bold uppercase tracking-widest text-purple-300">Identity Profile Settings</h2>

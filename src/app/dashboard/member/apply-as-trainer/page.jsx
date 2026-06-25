@@ -1,25 +1,70 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { motion as motionElement } from 'framer-motion';
 import { FiUserCheck, FiBriefcase, FiAward, FiClock, FiSend } from 'react-icons/fi';
+import { useSession } from '@/lib/auth-client';
 
 export default function ApplyAsTrainer() {
+  const [isRequested, setIsRequested] = useState(null)
   const [yearsExperience, setYearsExperience] = useState('');
   const [specialty, setSpecialty] = useState('');
   const [biography, setBiography] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [applicationStatus, setApplicationStatus] = useState(null); // null, 'pending'
+  const [applicationStatus, setApplicationStatus] = useState(null);
 
-  const handleSubmit = (e) => {
+  const { data: session } = useSession()
+  const user = session?.user
+  const role = user?.role
+  // console.log(user);
+  
+
+  useEffect(() => {
+    const requestCheck = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer/${user?.email}`)
+      const data = await res.json()
+      setIsRequested(data)
+    }
+    requestCheck()
+  }, [user?.email])
+
+  
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const formData = {
+      yearsExperience,
+      specialty,
+      biography,
+      userName: user?.name,
+      userEmail: user?.email,
+      userRole: role,
+      status: 'pending'
+    };
+
+    // console.log("Trainer Application:", formData);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer`, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    })
+    const data = await res.json()
+
+
+
+
+
+
     setIsSubmitting(true);
 
     // Simulate backend payload synchronization pipeline
     setTimeout(() => {
       setIsSubmitting(false);
-      setApplicationStatus('pending');
+      setApplicationStatus("pending");
     }, 1500);
   };
 
@@ -36,7 +81,7 @@ export default function ApplyAsTrainer() {
       </div>
 
       <AnimatePresence mode="wait">
-        {applicationStatus === 'pending' ? (
+        {isRequested?.status === 'pending' ? (
           /* Submission Screen Frame */
           <motionElement.div
             initial={{ opacity: 0, scale: 0.95 }}

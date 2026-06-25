@@ -20,7 +20,6 @@ export async function POST(req) {
       userName,
 
     }
-    // console.log(data);
 
 
     if (!price) {
@@ -60,7 +59,6 @@ export async function POST(req) {
         buyerEmail: userEmail || "No Email"
       }
     });
-    console.log(session, 'from session', data);
 
 
 

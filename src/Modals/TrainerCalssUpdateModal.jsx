@@ -76,7 +76,6 @@ export default function TrainerClassUpdateModal({ c }) {
             const data = await res.json();
 
             if (res.ok) {
-                console.log("Database updated successfully! ->", data);
                 toast.success("Data updated successfully");
                 
                 // 1. Manually close the controlled modal layout state instantly!

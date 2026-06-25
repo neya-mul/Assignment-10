@@ -28,7 +28,6 @@ export default function AddForumPost() {
 
       const imageUrl = await uploadToImgBB(imageFile);
 
-      // console.log(imageUrl);
 
       const forumPost = {
         title: e.target.title.value,
@@ -39,7 +38,6 @@ export default function AddForumPost() {
         userId:user?.id
       };
 
-      console.log(forumPost);
 
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`, {
         method: 'POST',
@@ -49,7 +47,6 @@ export default function AddForumPost() {
         body: JSON.stringify(forumPost)
       })
       const data = await res.json()
-      console.log(data);
 
 
       e.target.reset();

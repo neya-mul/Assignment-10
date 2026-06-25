@@ -23,7 +23,6 @@ export default async function BookedClasses() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-booked-classes/${user?.email}`)
   const myClass = await res.json()
 
-  // console.log(myClass);
 
 
   const emptyState = (

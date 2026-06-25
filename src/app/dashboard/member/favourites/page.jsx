@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiHeart, FiTrash2, FiUser, FiInfo } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
+import toast from 'react-hot-toast';
 
 export default function FavoriteClasses() {
   const [favorites, setFavorites] = useState([]);
@@ -21,7 +22,7 @@ export default function FavoriteClasses() {
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
-        console.error("Failed to load favorites stream:", err);
+        toast.error("Failed to load favorites stream:", err);
       }
     };
     favouriteFunction();
@@ -53,7 +54,7 @@ export default function FavoriteClasses() {
         setTimeout(() => setToastMessage(''), 3000);
       }
     } catch (error) {
-      console.error("Failed processing target removal:", error);
+      toast.error("Failed processing target removal:", error);
     }
   };
 

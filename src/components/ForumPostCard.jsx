@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { FiClock, FiUser, FiArrowRight } from 'react-icons/fi';
 
 export default function ForumPostCard({ post }) {
-  console.log(post);
   
   // Destructure with robust fallbacks
  const {_id, title, description, image, userName, userEmail, userId} =post

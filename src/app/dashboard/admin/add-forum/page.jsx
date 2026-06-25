@@ -39,7 +39,6 @@ export default function AddForumPost() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // console.log({ title, description, imageUrl });
     toast("Forum Post dispatch broadcast generated successfully.");
     setTitle(''); setDescription(''); setImageUrl('');
   };

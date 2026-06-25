@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default async function ManageClasses() {
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}admin-classes`)
   const classes = await res.json()
-  console.log(classes);
   
  
 

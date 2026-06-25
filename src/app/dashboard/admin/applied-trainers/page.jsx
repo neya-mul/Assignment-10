@@ -53,7 +53,7 @@ export default function AppliedTrainers() {
   // Action: Reject Applicant (Status demoted, feedback recorded)
   const handleReject = (id, name) => {
     // Log submission data block simulation
-    console.log(`Rejected ${name}. Internal Application Feedback Saved: "${feedback}"`);
+    toast(`Rejected ${name}. Internal Application Feedback Saved: "${feedback}"`);
     
     setApplicants(prev => prev.filter(app => app.id !== id));
     setSelectedApplicant(null);

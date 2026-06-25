@@ -17,7 +17,6 @@ import {
 export default function AddClass() {
   const { data: session } = useSession()
   const user = session?.user
-  // console.log(user);
 
   const [formData, setFormData] = useState({
     className: "",
@@ -62,7 +61,6 @@ export default function AddClass() {
         body: JSON.stringify(classData)
       })
       const data =await res.json()
-      // console.log(data)
 
       if(data.insertedId){
         window.location.reload()

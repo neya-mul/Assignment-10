@@ -1,6 +1,7 @@
 "use client"
 
 import React, { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 import { FiSearch, FiUserCheck, FiSlash, FiShield } from 'react-icons/fi';
 
 export default function ManageUsers() {
@@ -15,7 +16,6 @@ export default function ManageUsers() {
         const allUsers = await res.json();
         setUsers(allUsers);
       } catch (error) {
-        console.error("Failed to fetch users:", error);
       }
     };
     fetchUsers();
@@ -40,10 +40,10 @@ export default function ManageUsers() {
           user._id === userId ? { ...user, status: newStatus } : user
         ));
       } else {
-        console.error("Failed to update user status in the database.");
+        toast.error("Failed to update user status in the database.");
       }
     } catch (error) {
-      console.error("Network error:", error);
+      toast.error("Network error:", error);
     }
   };
 
@@ -64,10 +64,10 @@ export default function ManageUsers() {
           user._id === userId ? { ...user, role: 'admin' } : user
         ));
       } else {
-        console.error("Failed to promote user to admin in the database.");
+        toast.error("Failed to promote user to admin in the database.");
       }
     } catch (error) {
-      console.error("Network error:", error);
+      toast.error("Network error:", error);
     }
   };
 

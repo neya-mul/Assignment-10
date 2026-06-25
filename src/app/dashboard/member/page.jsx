@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiCalendar, FiHeart, FiUser, FiMail, FiShield, FiAlertTriangle, FiCheckCircle, FiClock, FiCornerDownRight } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
+import toast from 'react-hot-toast';
 
 export default function MemberOverview() {
   const [favorites, setFavorites] = useState([]);
+  const [isRequested, setIsRequested] = useState(null)
 
   const { data: session } = useSession();
   const user = session?.user;
@@ -24,14 +26,23 @@ export default function MemberOverview() {
 
         setTotalClasses(data);
       } catch (err) {
-        console.error(err);
+        toast.error(err);
       }
     };
 
     classes();
   }, [user?.email]);
 
-  // console.log(typeof totalClasses);
+
+  useEffect(() => {
+    const requestCheck = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer/${user?.email}`)
+      const data = await res.json()
+      setIsRequested(data)
+    }
+    requestCheck()
+  }, [user?.email])
+
 
   useEffect(() => {
     if (!user?.id) return;
@@ -42,22 +53,14 @@ export default function MemberOverview() {
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
-        console.error("Failed to load favorites stream:", err);
+        toast.error("Failed to load favorites stream:", err);
       }
     };
     favouriteFunction();
   }, [user?.id]); // Optimized dependency array to look at ID directly
 
   // Mock states reflecting the specified target parameters
-  const [stats] = useState({
-    totalFavorites: 12,
-  });
-
-  const [trainerApplication] = useState({
-    status: 'rejected', // Change to 'pending', 'approved', or 'rejected' to test layout states
-    adminFeedback: 'The profile credentials submitted lack verifiable NASM or ACE structural tracking metrics. Please amend certifications and re-transmit profile parameters.',
-  });
-
+ 
   // Safely extract initials dynamically
   const userInitials = user?.name
     ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
@@ -100,7 +103,6 @@ export default function MemberOverview() {
         </div>
       </div>
 
-      {/* Profile Metrics Console Area */}
       <div className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-6 md:p-8 shadow-[0_4px_30px_rgba(0,0,0,0.4)] space-y-6">
         <div>
           <h2 className="text-sm font-bold uppercase tracking-widest text-purple-300">Identity Profile Settings</h2>
@@ -142,17 +144,17 @@ export default function MemberOverview() {
 
             {/* Conditional pipeline flag renderer */}
             <div>
-              {trainerApplication.status === 'pending' && (
+              {isRequested?.status === 'pending' && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
                   <FiClock size={11} /> Pending Approval
                 </span>
               )}
-              {trainerApplication.status === 'rejected' && (
+              {isRequested?.status === 'rejected' && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20">
                   <FiAlertTriangle size={11} /> Application Denied
                 </span>
               )}
-              {trainerApplication.status === 'approved' && (
+              {isRequested?.status === 'approved' && (
                 <span className="inline-flex items-center gap-1 px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                   <FiCheckCircle size={11} /> Approved
                 </span>
@@ -161,13 +163,13 @@ export default function MemberOverview() {
           </div>
 
           {/* Render admin feedback contextual warning card only when system state is rejected */}
-          {trainerApplication.status === 'rejected' && trainerApplication.adminFeedback && (
+          {isRequested?.status === 'rejected' && isRequested?.adminFeedback && (
             <div className="mt-3 bg-red-500/5 border border-red-500/10 rounded-xl p-4 space-y-2">
               <div className="text-[10px] uppercase font-extrabold text-red-400 tracking-wider flex items-center gap-1">
                 <FiCornerDownRight size={12} /> Administrative Auditor Feedback
               </div>
               <p className="text-xs text-white/60 leading-relaxed font-sans pl-4 border-l border-red-500/20">
-                "{trainerApplication.adminFeedback}"
+                "{isRequested?.adminFeedback}"
               </p>
             </div>
           )}
