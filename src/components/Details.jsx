@@ -16,18 +16,16 @@ export default function Details({ cls }) {
   const { data: session } = authClient.useSession();
   const user = session?.user;
   const userRole = user?.role;
-  
-  // ── NEW: Define blocked state helper ──
+
   const isBlocked = user?.status === "blocked";
 
-  // ── Fix hydration: start everything false, only run checks after mount ──
   const [mounted, setMounted] = useState(false);
   const [alreadyBooked, setAlreadyBooked] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [checkingBook, setCheckingBook] = useState(false);
   const [checkingFav, setCheckingFav] = useState(false);
   const [favLoading, setFavLoading] = useState(false);
-  const [checkoutLoading, setCheckoutLoading] = useState(false); // Track Stripe routing loading
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -37,17 +35,14 @@ export default function Details({ cls }) {
     setCheckingBook(true);
     setCheckingFav(true);
 
-    // Pull from env, fallback to localhost if it's undefined
-    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:5000/"; 
+    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:5000/";
 
-    // Book check
-    fetch(`${baseUrl}bookings/check?classId=${cls._id}&userId=${user.id}`)
+    fetch(`${baseUrl}bookings/check?classId=${cls._id}&userEmail=${user.email}`)
       .then(r => r.json())
       .then(d => setAlreadyBooked(!!d.booked))
       .catch((err) => console.error("Booking check error:", err))
       .finally(() => setCheckingBook(false));
 
-    // Favorites check
     fetch(`${baseUrl}favorites/check?classId=${cls._id}&userId=${user.id}`)
       .then(r => r.json())
       .then(d => setIsFavorite(!!d.favorited))
@@ -56,11 +51,16 @@ export default function Details({ cls }) {
 
   }, [mounted, user, cls?._id]);
 
-  // Integrated Stripe redirect function
   const handleBookNow = async () => {
-    // 🛑 BLOCK GUARD: Stop blocked users immediately
+    // Guard 1: Blocked user
     if (isBlocked) {
       toast.error("Your account is blocked. Booking operations are restricted.");
+      return;
+    }
+
+    // Guard 2: Already booked
+    if (alreadyBooked) {
+      toast.error("You have already booked this class.");
       return;
     }
 
@@ -101,7 +101,6 @@ export default function Details({ cls }) {
       return;
     }
 
-    // 🛑 BLOCK GUARD: Stop blocked users immediately
     if (isBlocked) {
       toast.error("Your account is blocked. Actions are restricted.");
       return;
@@ -111,7 +110,6 @@ export default function Details({ cls }) {
 
     try {
       if (isFavorite) {
-        // ── CLICK #2: Already saved -> Remove it from MongoDB ──
         await fetch(`${process.env.NEXT_PUBLIC_URL}favorites`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
@@ -121,7 +119,6 @@ export default function Details({ cls }) {
         setIsFavorite(false);
         toast.success("Removed from your favourites.");
       } else {
-        // ── CLICK #1: Not saved yet -> Insert whole data block into MongoDB ──
         await fetch(`${process.env.NEXT_PUBLIC_URL}favorites`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -170,8 +167,8 @@ export default function Details({ cls }) {
       cls.difficulty === "Intermediate" ? "text-yellow-400 bg-yellow-400/10 border-yellow-400/25" :
         "text-red-400 bg-red-400/10 border-red-400/25";
 
-  // Combined button lock state (Added isBlocked constraint here)
-  const bookDisabled = mounted && (checkingBook || checkoutLoading || isBlocked);
+  // ✅ alreadyBooked now included
+  const bookDisabled = mounted && (checkingBook || checkoutLoading || isBlocked || alreadyBooked);
   const favDisabled = mounted && (checkingFav || favLoading || isBlocked);
 
   return (
@@ -310,7 +307,7 @@ export default function Details({ cls }) {
                   ${userRole === 'trainer'
                     ? "bg-red-950/20 border border-red-500/20 text-red-400/40 cursor-not-allowed"
                     : mounted && isBlocked
-                      ? "bg-red-950/20 border border-red-500/30 text-red-400/60 cursor-not-allowed shadow-none" // Blocked Style
+                      ? "bg-red-950/20 border border-red-500/30 text-red-400/60 cursor-not-allowed shadow-none"
                       : mounted && alreadyBooked
                         ? "bg-white/5 border border-white/10 text-white/30 cursor-not-allowed"
                         : bookDisabled
@@ -322,7 +319,7 @@ export default function Details({ cls }) {
                 {userRole === 'trainer' ? (
                   <>Members Only</>
                 ) : mounted && isBlocked ? (
-                  <><FiXCircle size={15} /> Account Blocked</> // Blocked Layout Text
+                  <><FiXCircle size={15} /> Account Blocked</>
                 ) : checkoutLoading ? (
                   <span className="animate-pulse">Connecting Stripe...</span>
                 ) : checkingBook ? (
@@ -334,7 +331,7 @@ export default function Details({ cls }) {
                 )}
               </button>
 
-              {/* Error feedback line for blocked status */}
+              {/* Messages below button */}
               {mounted && isBlocked && (
                 <p className="flex items-center justify-center gap-1.5 mt-2.5 text-[11px] text-red-400/50">
                   <FiAlertCircle size={11} /> Your account profile status is suspended
@@ -363,7 +360,7 @@ export default function Details({ cls }) {
                   py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
                   border transition-all duration-200
                   ${mounted && isBlocked
-                    ? "bg-red-950/10 border-red-500/20 text-red-400/40 cursor-not-allowed" // Blocked Style
+                    ? "bg-red-950/10 border-red-500/20 text-red-400/40 cursor-not-allowed"
                     : mounted && isFavorite
                       ? "bg-pink-500/10 border-pink-500/30 text-pink-400 hover:bg-pink-500/20 hover:scale-[1.02]"
                       : favDisabled
@@ -377,7 +374,7 @@ export default function Details({ cls }) {
                   className={mounted && !isBlocked && isFavorite ? "fill-pink-400 text-pink-400" : ""}
                 />
                 {mounted && isBlocked
-                  ? "Action Blocked" // Blocked Text
+                  ? "Action Blocked"
                   : favDisabled
                     ? "Loading..."
                     : mounted && isFavorite
