@@ -1,32 +1,31 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiHeart, FiTrash2, FiUser, FiInfo, FiChevronRight } from 'react-icons/fi';
+import { useSession } from '@/lib/auth-client';
 
 export default function FavoriteClasses() {
   // Initial array tracking favorite classes marked by the user
-  const [favorites, setFavorites] = useState([
-    {
-      id: 'fav-91',
-      className: 'Elite Powerlifting Max',
-      trainerName: 'Marcus Aurelius',
-      discipline: 'Weights',
-    },
-    {
-      id: 'fav-44',
-      className: 'Tactical Agility & HIIT',
-      trainerName: 'Bruce Wayne',
-      discipline: 'Cardio',
-    },
-    {
-      id: 'fav-10',
-      className: 'Vibe & Flow Alignment',
-      trainerName: 'Serena Williams',
-      discipline: 'Yoga',
-    },
-  ]);
+  const [favorites, setFavorites] = useState([]);
+  const {data:session} = useSession()
+  const user = session?.user
+  // console.log(user);
+  
 
+
+  useEffect(() => {
+    const favouriteFunction = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`)
+      const data = await res.json()
+      setFavorites(data)
+    }
+    favouriteFunction()
+  }, [user?.email])
+
+
+  console.log(favorites);
+  
   const [toastMessage, setToastMessage] = useState('');
 
   const handleRemoveFavorite = (id, className) => {
@@ -66,10 +65,10 @@ export default function FavoriteClasses() {
       <div className="grid grid-cols-1 gap-4">
         <AnimatePresence mode="popLayout">
           {favorites.length > 0 ? (
-            favorites.map(item => (
+            favorites.map((item,ind) => (
               <motion.div
                 layout
-                key={item.id}
+                key={ind}
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, x: -30 }}
@@ -84,13 +83,13 @@ export default function FavoriteClasses() {
                     </span>
                     <span className="text-[10px] text-white/20 font-mono tracking-wider">REF: {item.id}</span>
                   </div>
-                  
+
                   <h3 className="text-base font-bold text-white tracking-wide group-hover:text-purple-300 transition-colors">
                     {item.className}
                   </h3>
-                  
+
                   <div className="text-xs text-white/50 flex items-center gap-1.5">
-                    <FiUser size={13} className="text-purple-400/60" /> 
+                    <FiUser size={13} className="text-purple-400/60" />
                     <span>Lead Coach: <span className="text-white/70 font-semibold">{item.trainerName}</span></span>
                   </div>
                 </div>
