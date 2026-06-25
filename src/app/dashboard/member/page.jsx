@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiCalendar, FiHeart, FiUser, FiMail, FiShield, FiAlertTriangle, FiCheckCircle, FiClock, FiCornerDownRight } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
@@ -9,9 +9,31 @@ export default function MemberOverview() {
   const { data: session } = useSession();
   const user = session?.user;
 
+  const [totalClasses, setTotalClasses] = useState([]);
+
+  useEffect(() => {
+    const classes = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_URL}my-booked-classes/${user?.email}`
+        );
+
+        const data = await res.json();
+
+        setTotalClasses(data);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    classes();
+  }, [user?.email]);
+
+  // console.log(typeof totalClasses);
+  
+
   // Mock states reflecting the specified target parameters
   const [stats] = useState({
-    totalBookedClasses: 3,
     totalFavorites: 12,
   });
 
@@ -21,8 +43,8 @@ export default function MemberOverview() {
   });
 
   // Safely extract initials dynamically
-  const userInitials = user?.name 
-    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) 
+  const userInitials = user?.name
+    ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : 'U';
 
   return (
@@ -43,7 +65,7 @@ export default function MemberOverview() {
           <div className="absolute top-[-20%] right-[-10%] w-24 h-24 bg-violet-600/10 rounded-full blur-xl group-hover:bg-violet-600/20 transition-all" />
           <div className="space-y-1">
             <span className="text-[10px] uppercase font-bold text-white/40 tracking-widest block">Total Booked Classes</span>
-            <span className="text-3xl font-black text-white font-mono tracking-tight">{stats.totalBookedClasses}</span>
+            <span className="text-3xl font-black text-white font-mono tracking-tight">{totalClasses.length}</span>
           </div>
           <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-400 flex items-center justify-center">
             <FiCalendar size={20} />
@@ -101,7 +123,7 @@ export default function MemberOverview() {
               <span className="text-[10px] uppercase font-bold text-white/40 tracking-widest block">Trainer Pipeline Tracker</span>
               <span className="text-xs text-white/70 font-medium">Verification sequence status</span>
             </div>
-            
+
             {/* Conditional pipeline flag renderer */}
             <div>
               {trainerApplication.status === 'pending' && (

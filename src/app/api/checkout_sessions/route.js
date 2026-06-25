@@ -8,14 +8,17 @@ export async function POST(req) {
     const origin = headersList.get('origin')
 
     const body = await req.json();
-    const { classId, className, trainerName, price, userEmail, userName } = body;
+    const { classId, className, trainerName, trainerId, price, scheduleTime, userEmail, userName } = body;
     const data = {
       classId,
       className,
+      scheduleTime,
       trainerName,
+      trainerId,
       price,
       userEmail,
-      userName
+      userName,
+
     }
     // console.log(data);
 
@@ -63,11 +66,11 @@ export async function POST(req) {
 
     if (session.url) {
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-booked-classes`, {
-        method:'POST',
-        headers:{
-          'content-type':'application/json'
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json'
         },
-        body:JSON.stringify(data)
+        body: JSON.stringify(data)
       })
       res.json()
     }

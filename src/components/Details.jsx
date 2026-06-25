@@ -28,29 +28,33 @@ export default function Details({ cls }) {
 
   useEffect(() => { setMounted(true); }, []);
 
-  console.log(cls);
-  
+  // console.log(cls);
 
-  useEffect(() => {
+
+ useEffect(() => {
     if (!mounted || !user || !cls?._id) return;
 
     setCheckingBook(true);
     setCheckingFav(true);
 
-    fetch(`/api/bookings/check?classId=${cls._id}&userId=${user.id}`)
+    // Pull from env, fallback to localhost if it's undefined
+    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:5000/"; 
+
+    // Book check
+    fetch(`${baseUrl}bookings/check?classId=${cls._id}&userId=${user.id}`)
       .then(r => r.json())
       .then(d => setAlreadyBooked(!!d.booked))
-      .catch(() => { })
+      .catch((err) => console.error("Booking check error:", err))
       .finally(() => setCheckingBook(false));
 
-    fetch(`/api/favorites/check?classId=${cls._id}&userId=${user.id}`)
+    // Favorites check
+    fetch(`${baseUrl}favorites/check?classId=${cls._id}&userId=${user.id}`)
       .then(r => r.json())
       .then(d => setIsFavorite(!!d.favorited))
-      .catch(() => { })
+      .catch((err) => console.error("Favorites check error:", err))
       .finally(() => setCheckingFav(false));
 
   }, [mounted, user, cls?._id]);
-
   // Integrated Stripe redirect function
   const handleBookNow = async () => {
     setCheckoutLoading(true);
@@ -61,7 +65,9 @@ export default function Details({ cls }) {
         body: JSON.stringify({
           classId: cls._id,
           trainerName: cls.trainerName,
+          trainerId: cls.trainerId,
           className: cls.className,
+          scheduleTime: cls.scheduleTime,
           price: cls.price,
           userName: user?.name,
           userEmail: user?.email
@@ -88,26 +94,44 @@ export default function Details({ cls }) {
       router.push("/login");
       return;
     }
+
     setFavLoading(true);
+
     try {
       if (isFavorite) {
-        await fetch(`/api/favorites`, {
+        // ── CLICK #2: Already saved -> Remove it from MongoDB ──
+        await fetch(`${process.env.NEXT_PUBLIC_URL}favorites`, {
           method: "DELETE",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ classId: cls._id, userId: user.id }),
         });
+
         setIsFavorite(false);
         toast.success("Removed from your favourites.");
       } else {
-        await fetch(`/api/favorites`, {
+        // ── CLICK #1: Not saved yet -> Insert whole data block into MongoDB ──
+        await fetch(`${process.env.NEXT_PUBLIC_URL}favorites`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ classId: cls._id, userId: user.id }),
+          body: JSON.stringify({
+            classId: cls._id,
+            userId: user.id,
+            className: cls.className,
+            category: cls.category,
+            price: cls.price,
+            image: cls.image,
+            trainerName: cls.trainerName,
+            duration: cls.duration,
+            difficulty: cls.difficulty,
+            scheduleTime: cls.scheduleTime
+          }),
         });
+
         setIsFavorite(true);
         toast.success("Successfully added to your favourites!");
       }
-    } catch {
+    } catch (error) {
+      console.error("Favorite toggle failed:", error);
       toast.error("Something went wrong. Please try again.");
     } finally {
       setFavLoading(false);
@@ -137,7 +161,6 @@ export default function Details({ cls }) {
   // Combined button lock state
   const bookDisabled = mounted && (checkingBook || checkoutLoading);
   const favDisabled = mounted && (checkingFav || favLoading);
-
   return (
     <div className="min-h-screen bg-[#050816] py-16 px-4">
       <Toaster
@@ -312,20 +335,20 @@ export default function Details({ cls }) {
                 onClick={handleFavorite}
                 disabled={favDisabled}
                 className={`
-                  w-full flex items-center justify-center gap-2
-                  py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
-                  border transition-all duration-200
-                  ${mounted && isFavorite
-                    ? "bg-pink-500/12 border-pink-500/35 text-pink-400 hover:bg-pink-500/20"
+    w-full flex items-center justify-center gap-2
+    py-3.5 rounded-xl font-bold text-sm tracking-wide uppercase
+    border transition-all duration-200
+    ${mounted && isFavorite
+                    ? "bg-pink-500/10 border-pink-500/30 text-pink-400 hover:bg-pink-500/20 hover:scale-[1.02]" // Pink active toggle style
                     : favDisabled
                       ? "bg-white/5 border-white/10 text-white/25 cursor-wait"
                       : "bg-white/5 border-purple-500/25 text-white/65 hover:bg-purple-500/10 hover:border-purple-400 hover:text-white hover:scale-[1.02]"
                   }
-                `}
+  `}
               >
                 <FiHeart
                   size={15}
-                  className={mounted && isFavorite ? "fill-pink-400" : ""}
+                  className={mounted && isFavorite ? "fill-pink-400 text-pink-400" : ""}
                 />
                 {favDisabled
                   ? "Loading..."
