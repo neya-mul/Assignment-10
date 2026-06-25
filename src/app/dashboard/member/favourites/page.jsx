@@ -1,37 +1,61 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FiHeart, FiTrash2, FiUser, FiInfo, FiChevronRight } from 'react-icons/fi';
+import { FiHeart, FiTrash2, FiUser, FiInfo } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
 
 export default function FavoriteClasses() {
-  // Initial array tracking favorite classes marked by the user
   const [favorites, setFavorites] = useState([]);
-  const {data:session} = useSession()
-  const user = session?.user
-  // console.log(user);
-  
-
-
-  useEffect(() => {
-    const favouriteFunction = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`)
-      const data = await res.json()
-      setFavorites(data)
-    }
-    favouriteFunction()
-  }, [user?.email])
-
-
-  console.log(favorites);
-  
+  const { data: session } = useSession();
+  const user = session?.user;
   const [toastMessage, setToastMessage] = useState('');
 
-  const handleRemoveFavorite = (id, className) => {
-    setFavorites(prev => prev.filter(item => item.id !== id));
-    setToastMessage(`Removed "${className}" from favorites array.`);
-    setTimeout(() => setToastMessage(''), 3000);
+  // Fetch bookmarks when user details change
+  useEffect(() => {
+    if (!user?.id) return;
+    
+    const favouriteFunction = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`);
+        const data = await res.json();
+        setFavorites(data);
+      } catch (err) {
+        console.error("Failed to load favorites stream:", err);
+      }
+    };
+    favouriteFunction();
+  }, [user?.id]); // Optimized dependency array to look at ID directly
+
+  // ── FIX: Wired up payload variables and dynamic state filter updates ──
+  const handleRemoveFavorite = async (classId) => {
+    if (!user?.id || !classId) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favorites`, {
+        method: 'DELETE',
+        headers: {
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({ 
+          classId: classId, 
+          userId: user?.id 
+        })
+      });
+      
+      const data = await res.json();
+
+      if (data.success || data.deletedCount > 0) {
+        // ✨ Animate card removal immediately by filtering the state
+        setFavorites((prev) => prev.filter(item => (item.classId !== classId && item._id !== classId)));
+        
+        // Show notification toast
+        setToastMessage('Removed from your favorites array.');
+        setTimeout(() => setToastMessage(''), 3000);
+      }
+    } catch (error) {
+      console.error("Failed processing target removal:", error);
+    }
   };
 
   return (
@@ -64,11 +88,11 @@ export default function FavoriteClasses() {
       {/* Favorites Stream Container */}
       <div className="grid grid-cols-1 gap-4">
         <AnimatePresence mode="popLayout">
-          {favorites.length > 0 ? (
-            favorites.map((item,ind) => (
+          {favorites && favorites.length > 0 ? (
+            favorites.map((item, ind) => (
               <motion.div
                 layout
-                key={ind}
+                key={item.classId || item._id || ind} // Safe key assignments
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, x: -30 }}
@@ -79,9 +103,11 @@ export default function FavoriteClasses() {
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-2">
                     <span className="px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
-                      {item.discipline}
+                      {item.category || item.discipline || "FITNESS"}
                     </span>
-                    <span className="text-[10px] text-white/20 font-mono tracking-wider">REF: {item.id}</span>
+                    <span className="text-[10px] text-white/20 font-mono tracking-wider">
+                      REF: {(item.classId || item._id || "TBD").slice(-6).toUpperCase()}
+                    </span>
                   </div>
 
                   <h3 className="text-base font-bold text-white tracking-wide group-hover:text-purple-300 transition-colors">
@@ -90,14 +116,14 @@ export default function FavoriteClasses() {
 
                   <div className="text-xs text-white/50 flex items-center gap-1.5">
                     <FiUser size={13} className="text-purple-400/60" />
-                    <span>Lead Coach: <span className="text-white/70 font-semibold">{item.trainerName}</span></span>
+                    <span>Lead Coach: <span className="text-white/70 font-semibold">{item.trainerName || "Staff"}</span></span>
                   </div>
                 </div>
 
                 {/* Operations Layer Right */}
                 <div className="flex items-center gap-3 self-end sm:self-center shrink-0">
                   <button
-                    onClick={() => handleRemoveFavorite(item.id, item.className)}
+                    onClick={() => handleRemoveFavorite(item.classId || item?._id)}
                     className="p-2.5 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all group/btn"
                     title="Remove Bookmark"
                   >
@@ -107,7 +133,7 @@ export default function FavoriteClasses() {
               </motion.div>
             ))
           ) : (
-            /* Layout Fallback Fallback State Frame */
+            /* Layout Fallback State Frame */
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
