@@ -1,21 +1,43 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiTrash2, FiMessageSquare, FiUser, FiInfo } from 'react-icons/fi';
 
 export default function ForumPostManage() {
-  const [posts, setPosts] = useState([
-    { id: 'p1', title: 'Ultimate Cutting Secret Protocols', author: 'Mike Tyson', excerpt: 'You need to drop total system caloric thresholds down by 15% immediately...', category: 'Nutrition' },
-    { id: 'p2', title: 'Anabolic Sleep Schedules Optimization', author: 'Emma Watson', excerpt: 'Rest cycles dictate total target muscular recovery framework limits...', category: 'Recovery' },
-    { id: 'p3', title: 'Click Here For Instant Magic Performance Pills', author: 'SpamAccount99', excerpt: 'Buy unregulated pharmaceuticals fast at this external domain click loop...', category: 'Spam' },
-  ]);
+  const [posts, setPosts] = useState([]);
   const [toastMessage, setToastMessage] = useState('');
 
-  const handleDeletePost = (id, title) => {
-    setPosts(prev => prev.filter(p => p.id !== id));
-    setToastMessage(`Purged: "${title}" wiped out from active user feeds.`);
-    setTimeout(() => setToastMessage(''), 3000);
+
+  useEffect(() => {
+    const getAllPosts = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`)
+      const data = await res.json()
+       setPosts(data)
+    }
+    getAllPosts()
+  },[])
+
+  console.log(posts);
+  
+
+  const handleDeletePost = async (id, title) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        setPosts(prev => prev.filter(p => p._id !== id));
+        setToastMessage(`Purged: "${title}" wiped out from active user feeds.`);
+        setTimeout(() => setToastMessage(''), 3000);
+      } else {
+        alert("Failed to delete the post from the server.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      alert("Network communication fault during deletion.");
+    }
   };
 
   return (
@@ -36,8 +58,8 @@ export default function ForumPostManage() {
 
       <div className="grid grid-cols-1 gap-4">
         {posts.length > 0 ? (
-          posts.map(post => (
-            <motion.div layout key={post.id} className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-purple-500/20 transition-all">
+          posts.map((post, ind) => (
+            <motion.div layout key={ind} className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:border-purple-500/20 transition-all">
               <div className="space-y-1.5 max-w-3xl">
                 <div className="flex flex-wrap items-center gap-2">
                   <span className="px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">{post.category}</span>
@@ -47,7 +69,7 @@ export default function ForumPostManage() {
                 <p className="text-xs text-white/50 leading-relaxed font-normal">{post.excerpt}</p>
               </div>
 
-              <button onClick={() => handleDeletePost(post.id, post.title)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs font-bold uppercase tracking-wider shrink-0 self-end md:self-center"><FiTrash2 size={13} /> Purge Post</button>
+              <button onClick={() => handleDeletePost(post?._id, post?.title)} className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs font-bold uppercase tracking-wider shrink-0 self-end md:self-center"><FiTrash2 size={13} /> Delete</button>
             </motion.div>
           ))
         ) : (
