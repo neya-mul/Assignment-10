@@ -78,29 +78,29 @@ export default function Navbar() {
 
 
             {/* ── Logo ── */}
-           {/* ── Logo ── */}
-<Link href="/" className="flex items-center gap-2 flex-shrink-0 select-none group">
-  {/* The Image Container - We use overflow-visible so the scaled-up logo can breathe */}
-  <div className="relative w-16 h-14 overflow-visible flex items-center justify-center">
-    <Image
-      src={logo}
-      alt="FitnessCafe Logo"
-      fill
-      priority
-      sizes="120px"
-      /* scale-150 or scale-[1.75] forces the graphic out of its small bounding box */
-      className="object-contain scale-[1.75] transform transition-transform duration-300 group-hover:scale-[1.85]"
-    />
-  </div>
-  
-  {/* The Text Brand Typography */}
-  {/* <span
+            {/* ── Logo ── */}
+            <Link href="/" className="flex items-center gap-2 flex-shrink-0 select-none group">
+              {/* The Image Container - We use overflow-visible so the scaled-up logo can breathe */}
+              <div className="relative w-16 h-14 overflow-visible flex items-center justify-center">
+                <Image
+                  src={logo}
+                  alt="FitnessCafe Logo"
+                  fill
+                  priority
+                  sizes="120px"
+                  /* scale-150 or scale-[1.75] forces the graphic out of its small bounding box */
+                  className="object-contain scale-[1.75] transform transition-transform duration-300 group-hover:scale-[1.85]"
+                />
+              </div>
+
+              {/* The Text Brand Typography */}
+              {/* <span
     className="font-black text-[24px] tracking-[.15em] bg-gradient-to-r from-white via-purple-100 to-violet-400 bg-clip-text text-transparent uppercase transition-all duration-300 group-hover:opacity-95 pl-4"
     style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
   >
     FitnessCafe
   </span> */}
-</Link>
+            </Link>
             {/* ── Desktop nav links ── */}
             <div className="hidden md:flex items-center gap-1">
               {navLinks.map(({ label, href, icon }) => {
@@ -180,8 +180,8 @@ export default function Navbar() {
                         {/* Actions */}
                         <div className="p-2 space-y-1">
                           <Link
-                            href={`dashboard/${user?.role}`}
-                            onClick={() => setDropdownOpen(false)}
+                            href={`/dashboard/${user?.role}` || `details/dashboard/${user?.role}`}
+                             onClick={() => setDropdownOpen(false)}
                             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-200 tracking-wider uppercase"
                           >
                             <FiLayout size={13} className="text-purple-400" />

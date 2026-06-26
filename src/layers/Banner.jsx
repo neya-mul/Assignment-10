@@ -203,24 +203,6 @@ const Banner = () => {
 
           >
 
-            {/*
-
-Font scale strategy:
-
-mobile → 2.2rem (35px) — doesn't overwhelm the small image below
-
-sm → 3rem (48px)
-
-md → 3.5rem (56px)
-
-lg → 3.2rem (51px) — side-by-side, image is big so balance
-
-xl → 4rem (64px)
-
-2xl → 4.75rem (76px)
-
-*/}
-
             <span className="block text-[2.2rem] sm:text-[3rem] md:text-[3.5rem] lg:text-[3rem] xl:text-[3.8rem] 2xl:text-[4.5rem]">
 
               BUILT TODAY.
