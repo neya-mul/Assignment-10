@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useSession } from '@/lib/auth-client';
 import { FiUsers, FiLayers, FiCheckSquare, FiUser, FiMail, FiShield, FiActivity, FiClock } from 'react-icons/fi';
@@ -9,23 +9,65 @@ const AdminHomePage = () => {
   const { data: session } = useSession();
   const user = session?.user;
 
+  const [users, setUsers] = useState([])
+  const [classes, setClasses] = useState([])
+  const [bookedClasses, setBookedClasses] = useState([])
+
+
+
+  useEffect(() => {
+    const getUser = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}users`)
+      const data = await res.json()
+      setUsers(data)
+    }
+    getUser()
+  }, [])
+
+
+
+  useEffect(() => {
+    const getClasses = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}all-classes-admin`)
+      const data = await res.json()
+      setClasses(data)
+    }
+    getClasses()
+  }, [])
+
+
+
+  useEffect(() => {
+    const getBookedClasses = async () => {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}admin-booked-classes`)
+      const data = await res.json()
+      setBookedClasses(data)
+    }
+    getBookedClasses()
+  }, [])
+
+  // admin-booked-classes
+
+
+
+
   // Static Metrics - easily swap with server actions / fetch hooks later
   const stats = [
     {
       title: "Total Users",
-      value: "1,248",
+      value: users.length,
       change: "+12% this week",
       icon: <FiUsers size={22} className="text-violet-400" />,
     },
     {
       title: "Total Classes",
-      value: "42",
+      value: classes.length,
       change: "Active schedules",
       icon: <FiLayers size={22} className="text-purple-400" />,
     },
     {
       title: "Total Booked Classes",
-      value: "812",
+      value: bookedClasses.length,
       change: "88% occupancy rate",
       icon: <FiCheckSquare size={22} className="text-fuchsia-400" />,
     }
@@ -46,11 +88,11 @@ const AdminHomePage = () => {
 
   return (
     <div className="space-y-10">
-      
+
       {/* Top Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-purple-500/10 pb-6">
         <div>
-          <h1 
+          <h1
             className="text-4xl font-black tracking-[.12em] bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent uppercase"
             style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
           >
@@ -104,7 +146,7 @@ const AdminHomePage = () => {
         </h2>
 
         <div className="flex flex-col sm:flex-row items-center gap-6">
-          
+
           {/* Avatar frame */}
           <div className="relative shrink-0">
             <div className="w-24 h-24 rounded-full border-2 border-purple-500/30 flex items-center justify-center bg-purple-500/10 shadow-[0_0_20px_rgba(123,92,240,0.15)] overflow-hidden">
@@ -124,7 +166,7 @@ const AdminHomePage = () => {
           <div className="flex-1 text-center sm:text-left space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-center sm:justify-start gap-3">
               <h3 className="text-2xl font-black tracking-wide text-white">{adminProfile.name}</h3>
-              
+
               {/* Glowing Admin Badge */}
               <span className="inline-block mx-auto sm:mx-0 px-3 py-1 text-[10px] font-extrabold tracking-[0.15em] uppercase rounded-full bg-gradient-to-r from-violet-600/20 to-purple-500/20 text-purple-300 border border-purple-500/30 shadow-[0_0_15px_rgba(123,92,240,0.2)]">
                 {adminProfile.role}
