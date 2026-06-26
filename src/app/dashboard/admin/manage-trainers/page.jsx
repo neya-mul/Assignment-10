@@ -1,30 +1,62 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiUserMinus, FiAlertTriangle, FiX, FiCheckCircle } from 'react-icons/fi';
 
 export default function ManageTrainers() {
-  // Mock State - Easily swap with server actions / query fetching later
-  const [trainers, setTrainers] = useState([
-    { id: 'trn_1', name: 'Marcus Aurelius', email: 'marcus@gladiatorfit.com', specialty: 'Hypertrophy & Powerlifting', classesCount: 5 },
-    { id: 'trn_2', name: 'Serena Williams', email: 'serena@vibeandflow.com', specialty: 'Flexibility Mobility & Core Alignment', classesCount: 3 },
-    { id: 'trn_3', name: 'Arnold Schwarzenegger', email: 'arnold@goldsgym.com', specialty: 'Classic Physique & Elite Bulk', classesCount: 8 },
-  ]);
-
+  const [trainers, setTrainers] = useState([]);
   const [confirmDemoteTarget, setConfirmDemoteTarget] = useState(null);
   const [toast, setToast] = useState({ show: false, message: '' });
+
+  const getBaseUrl = () => {
+    const url = process.env.NEXT_PUBLIC_URL || 'http://localhost:5000/';
+    return url.endsWith('/') ? url : `${url}/`;
+  };
+
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      try {
+        const res = await fetch(`${getBaseUrl()}users`);
+        const allUsers = await res.json();
+        
+        const onlyTrainers = allUsers.filter(user => user.role === 'trainer');
+        setTrainers(onlyTrainers);
+      } catch (error) {
+        console.error("Failed to load trainers:", error);
+      }
+    };
+    fetchTrainers();
+  }, []);
 
   const triggerToast = (message) => {
     setToast({ show: true, message });
     setTimeout(() => setToast({ show: false, message: '' }), 4000);
   };
 
-  // Action: Demote Trainer (Strips privileges, reduces roles to standard member status)
-  const handleDemoteTrainer = (id, name) => {
-    setTrainers(prev => prev.filter(t => t.id !== id));
-    setConfirmDemoteTarget(null);
-    triggerToast(`Privileges revoked: ${name} demoted to standard member status.`);
+  const handleDemoteTrainer = async (id, name) => {
+    try {
+      const res = await fetch(`${getBaseUrl()}users/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role: 'member'
+        }),
+      });
+
+      if (res.ok) {
+        setTrainers(prev => prev.filter(t => t._id !== id));
+        setConfirmDemoteTarget(null);
+        triggerToast(`Privileges revoked: ${name} demoted to standard member status.`);
+      } else {
+        triggerToast("Failed to demote trainer due to a server error.");
+      }
+    } catch (error) {
+      console.error("Demotion error:", error);
+      triggerToast("Network communication fault during demotion.");
+    }
   };
 
   return (
@@ -64,29 +96,27 @@ export default function ManageTrainers() {
               <tr className="border-b border-purple-500/10 bg-[#090714] text-[10px] font-extrabold uppercase tracking-widest text-white/40">
                 <th className="py-4 px-6">Trainer Profile</th>
                 <th className="py-4 px-6">Email Address</th>
-                <th className="py-4 px-6">Specialty Core</th>
-                <th className="py-4 px-6 text-center">Active Schedules</th>
+                <th className="py-4 px-6">Status Profile</th>
                 <th className="py-4 px-6 text-right">System Management</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-purple-500/5 text-sm">
               {trainers.length > 0 ? (
-                trainers.map((trainer) => (
-                  <tr key={trainer.id} className="hover:bg-purple-500/5 transition-colors duration-150">
+                trainers.map((trainer, ind) => (
+                  <tr key={trainer._id || ind} className="hover:bg-purple-500/5 transition-colors duration-150">
                     <td className="py-4 px-6 font-semibold text-white/90">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-xs uppercase">
-                          {trainer.name.slice(0, 2)}
+                          {(trainer.userName || 'TR').slice(0, 2)}
                         </div>
-                        <span>{trainer.name}</span>
+                        <span>{trainer.name || 'Anonymous'}</span>
                       </div>
                     </td>
-                    <td className="py-4 px-6 text-white/50 font-mono text-xs">{trainer.email}</td>
+                    <td className="py-4 px-6 text-white/50 font-mono text-xs">{trainer.userEmail || trainer.email}</td>
                     <td className="py-4 px-6">
-                      <span className="text-purple-300/90 text-xs font-medium">{trainer.specialty}</span>
-                    </td>
-                    <td className="py-4 px-6 text-center font-mono font-bold text-white/70">
-                      {trainer.classesCount} Classes
+                      <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+                        {trainer.role}
+                      </span>
                     </td>
                     <td className="py-4 px-6 text-right">
                       <button
@@ -101,7 +131,7 @@ export default function ManageTrainers() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" className="py-12 text-center text-white/30 text-sm font-semibold tracking-wide">
+                  <td colSpan="4" className="py-12 text-center text-white/30 text-sm font-semibold tracking-wide">
                     No active certified trainers registered on the system.
                   </td>
                 </tr>
@@ -150,7 +180,7 @@ export default function ManageTrainers() {
 
               {/* Warning Context */}
               <div className="bg-white/5 border border-white/5 rounded-xl p-4 mb-6 text-sm text-white/70 leading-relaxed">
-                Are you certain you want to revoke <span className="text-red-400 font-bold">{confirmDemoteTarget.name}</span>'s certified trainer permissions? 
+                Are you certain you want to revoke <span className="text-red-400 font-bold">{confirmDemoteTarget.userName}</span>'s certified trainer permissions? 
                 This will strip their access to schedule updates, class configurations, and dashboard pipelines immediately.
               </div>
 
@@ -163,7 +193,7 @@ export default function ManageTrainers() {
                   Cancel
                 </button>
                 <button
-                  onClick={() => handleDemoteTrainer(confirmDemoteTarget.id, confirmDemoteTarget.name)}
+                  onClick={() => handleDemoteTrainer(confirmDemoteTarget._id, confirmDemoteTarget.userName)}
                   className="px-4 py-2.5 rounded-xl bg-red-500/20 border border-red-500/30 text-red-400 hover:bg-red-500 text-white transition-all duration-200 text-xs font-bold uppercase tracking-wider"
                 >
                   Confirm Revocation
