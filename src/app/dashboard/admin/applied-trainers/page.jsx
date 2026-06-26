@@ -1,64 +1,85 @@
 "use client"
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiEye, FiCheck, FiX, FiMessageSquare, FiBriefcase, FiAward, FiClock } from 'react-icons/fi';
 
 export default function AppliedTrainers() {
-  // Mock State - Easily swap with dynamic fetch operations & server actions later
-  const [applicants, setApplicants] = useState([
-    {
-      id: 'app_1',
-      name: 'Marcus Aurelius',
-      email: 'marcus@gladiatorfit.com',
-      experience: '8 Years Competitive Bodybuilding & Strength Conditioning',
-      specialty: 'Hypertrophy, Powerlifting & Contest Prep',
-      availableTime: 'Mon - Fri (6:00 AM - 12:00 PM)',
-    },
-    {
-      id: 'app_2',
-      name: 'Serena Williams',
-      email: 'serena@vibeandflow.com',
-      experience: '5 Years Certified Yoga & Pilates Practitioner',
-      specialty: 'Flexibility Mobility, Mindfulness, and Core Alignment',
-      availableTime: 'Tue - Thu - Sat (4:00 PM - 9:00 PM)',
-    },
-    {
-      id: 'app_3',
-      name: 'Bruce Wayne',
-      email: 'bruce@gothamdefense.com',
-      experience: '12 Years Martial Arts, Calisthenics, Tactical Endurance Training',
-      specialty: 'High-Intensity Interval Training (HIIT) & Functional Agility',
-      availableTime: 'Everyday (11:00 PM - 4:00 AM)',
-    }
-  ]);
-
+  const [applicants, setApplicants] = useState([]);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
   const [feedback, setFeedback] = useState('');
   const [toast, setToast] = useState({ show: false, message: '' });
+
+  // Safe base URL parsing helper to prevent double-slashing errors
+  const getBaseUrl = () => {
+    const url = process.env.NEXT_PUBLIC_URL || 'http://localhost:5000/';
+    return url.endsWith('/') ? url : `${url}/`;
+  };
+
+  // Fetch pending applications on mount
+  useEffect(() => {
+    const getAllApplicants = async () => {
+      try {
+        const res = await fetch(`${getBaseUrl()}apply-as-traienr`);
+        const data = await res.json();
+        setApplicants(data);
+      } catch (error) {
+        console.error("Failed to fetch applications:", error);
+      }
+    };
+    getAllApplicants();
+  }, []); // 🛡️ Fix: Empty dependency array stops the infinite loading sequence loop
 
   const triggerToast = (message) => {
     setToast({ show: true, message });
     setTimeout(() => setToast({ show: false, message: '' }), 4000);
   };
 
-  // Action: Approve Applicant (Role upgrades to Trainer)
-  const handleApprove = (id, name) => {
-    setApplicants(prev => prev.filter(app => app.id !== id));
-    setSelectedApplicant(null);
-    setFeedback('');
-    triggerToast(`Application Approved: ${name} is now upgraded to Trainer.`);
+  // Action: Approve Applicant (Upgrades user role & drops pending entry document)
+  const handleApprove = async (id, email, name) => {
+    try {
+      const res = await fetch(`${getBaseUrl()}approve-trainer/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userEmail: email }),
+      });
+
+      if (res.ok) {
+        setApplicants(prev => prev.filter(app => app._id !== id));
+        setSelectedApplicant(null);
+        setFeedback('');
+        triggerToast(`Application Approved: ${name} is now upgraded to Trainer.`);
+      } else {
+        const err = await res.json();
+        triggerToast(`Error: ${err.error || 'Could not upgrade user.'}`);
+      }
+    } catch (error) {
+      console.error(error);
+      triggerToast("Network communication fault during approval.");
+    }
   };
 
-  // Action: Reject Applicant (Status demoted, feedback recorded)
-  const handleReject = (id, name) => {
-    // Log submission data block simulation
-    toast(`Rejected ${name}. Internal Application Feedback Saved: "${feedback}"`);
-    
-    setApplicants(prev => prev.filter(app => app.id !== id));
-    setSelectedApplicant(null);
-    setFeedback('');
-    triggerToast(`Application Rejected. Feedback sent securely to ${name}.`);
+  // Action: Reject Applicant (Cleans item out of system queue grid)
+  const handleReject = async (id, name) => {
+    try {
+      const res = await fetch(`${getBaseUrl()}reject-trainer/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        setApplicants(prev => prev.filter(app => app._id !== id));
+        setSelectedApplicant(null);
+        setFeedback('');
+        triggerToast(`Application Rejected. Feedback context logged for ${name}.`);
+      } else {
+        triggerToast("Failed to safely eliminate pipeline record entry.");
+      }
+    } catch (error) {
+      console.error(error);
+      triggerToast("Network execution fault during rejection.");
+    }
   };
 
   return (
@@ -81,7 +102,7 @@ export default function AppliedTrainers() {
 
       {/* Title Header Section */}
       <div className="border-b border-purple-500/10 pb-6">
-        <h1 
+        <h1
           className="text-4xl font-black tracking-[.12em] bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent uppercase"
           style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
         >
@@ -104,10 +125,10 @@ export default function AppliedTrainers() {
             </thead>
             <tbody className="divide-y divide-purple-500/5 text-sm">
               {applicants.length > 0 ? (
-                applicants.map((app) => (
-                  <tr key={app.id} className="hover:bg-purple-500/5 transition-colors duration-150">
-                    <td className="py-4 px-6 font-semibold text-white/90">{app.name}</td>
-                    <td className="py-4 px-6 text-white/50 font-mono text-xs">{app.email}</td>
+                applicants.map((app, ind) => (
+                  <tr key={app._id || ind} className="hover:bg-purple-500/5 transition-colors duration-150">
+                    <td className="py-4 px-6 font-semibold text-white/90">{app.userName}</td>
+                    <td className="py-4 px-6 text-white/50 font-mono text-xs">{app.userEmail}</td>
                     <td className="py-4 px-6">
                       <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400 animate-pulse">
                         Pending Review
@@ -140,14 +161,14 @@ export default function AppliedTrainers() {
       <AnimatePresence>
         {selectedApplicant && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            
+
             {/* Dark glass backdrop overlay */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => { setSelectedApplicant(null); setFeedback(''); }}
-              className="absolute inset-0 bg-[#06040a]/80 backdrop-blur-md" 
+              className="absolute inset-0 bg-[#06040a]/80 backdrop-blur-md"
             />
 
             {/* Modal Box */}
@@ -160,10 +181,10 @@ export default function AppliedTrainers() {
               {/* Header */}
               <div className="flex justify-between items-start border-b border-purple-500/10 pb-4 mb-6">
                 <div>
-                  <h3 className="text-xl font-black uppercase tracking-wider text-white">{selectedApplicant.name}</h3>
-                  <p className="text-xs text-purple-400 font-mono mt-0.5">{selectedApplicant.email}</p>
+                  <h3 className="text-xl font-black uppercase tracking-wider text-white">{selectedApplicant.userName}</h3>
+                  <p className="text-xs text-purple-400 font-mono mt-0.5">{selectedApplicant.userEmail}</p>
                 </div>
-                <button 
+                <button
                   onClick={() => { setSelectedApplicant(null); setFeedback(''); }}
                   className="text-white/40 hover:text-white transition-colors"
                 >
@@ -173,14 +194,14 @@ export default function AppliedTrainers() {
 
               {/* Application Details Body Grid */}
               <div className="space-y-4 mb-6 text-sm">
-                
+
                 {/* Specialty */}
                 <div className="space-y-1">
                   <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-white/40">
                     <FiAward className="text-purple-400" size={12} /> Target Specialty Focus
                   </span>
                   <p className="text-white/80 bg-white/5 border border-white/5 rounded-xl px-4 py-2.5 font-medium">
-                    {selectedApplicant.specialty}
+                    {selectedApplicant.specialty || 'N/A'}
                   </p>
                 </div>
 
@@ -190,29 +211,29 @@ export default function AppliedTrainers() {
                     <FiBriefcase className="text-purple-400" size={12} /> Work & Track Experience
                   </span>
                   <p className="text-white/80 bg-white/5 border border-white/5 rounded-xl px-4 py-2.5 font-medium">
-                    {selectedApplicant.experience}
+                    {selectedApplicant.yearsExperience ? `${selectedApplicant.yearsExperience} Years` : 'N/A'}
                   </p>
                 </div>
 
-                {/* Time Availability */}
+                {/* Biography */}
                 <div className="space-y-1">
                   <span className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-white/40">
-                    <FiClock className="text-purple-400" size={12} /> Routine Availability Windows
+                    <FiMessageSquare className="text-purple-400" size={12} /> Biography Statement
                   </span>
-                  <p className="text-white/80 bg-white/5 border border-white/5 rounded-xl px-4 py-2.5 font-medium">
-                    {selectedApplicant.availableTime}
+                  <p className="text-white/80 bg-white/5 border border-white/5 rounded-xl px-4 py-2.5 font-medium max-h-24 overflow-y-auto">
+                    {selectedApplicant.biography || 'No biography details specified.'}
                   </p>
                 </div>
 
                 {/* Feedback Input Field */}
                 <div className="space-y-1.5 pt-2">
                   <label htmlFor="feedbackInput" className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider font-bold text-white/40">
-                    <FiMessageSquare className="text-purple-400" size={12} /> Review Assessment Feedback (Required on rejection)
+                    <FiMessageSquare className="text-purple-400" size={12} /> Review Assessment Feedback (Optional)
                   </label>
                   <textarea
                     id="feedbackInput"
-                    rows={3}
-                    placeholder="Provide specific optimization notes, credential missing parameters, or next steps context..."
+                    rows={2}
+                    placeholder="Provide performance notes or application context..."
                     value={feedback}
                     onChange={(e) => setFeedback(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl bg-white/5 border border-purple-500/20 text-white placeholder-white/20 text-xs focus:outline-none focus:border-purple-500/50 focus:bg-purple-500/5 transition-all resize-none"
@@ -222,10 +243,10 @@ export default function AppliedTrainers() {
 
               {/* Action Buttons Matrix */}
               <div className="grid grid-cols-2 gap-4 border-t border-purple-500/10 pt-4">
-                
+
                 {/* Reject Control button */}
                 <button
-                  onClick={() => handleReject(selectedApplicant.id, selectedApplicant.name)}
+                  onClick={() => handleReject(selectedApplicant._id, selectedApplicant.userName)}
                   className="flex items-center justify-center gap-1.5 w-full py-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 text-xs font-bold uppercase tracking-wider transition-colors"
                 >
                   <FiX size={14} />
@@ -234,7 +255,7 @@ export default function AppliedTrainers() {
 
                 {/* Approve Control button */}
                 <button
-                  onClick={() => handleApprove(selectedApplicant.id, selectedApplicant.name)}
+                  onClick={() => handleApprove(selectedApplicant._id, selectedApplicant.userEmail, selectedApplicant.userName)}
                   className="flex items-center justify-center gap-1.5 w-full py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-white shadow-[0_0_15px_rgba(123,92,240,0.3)] text-xs font-bold uppercase tracking-wider transition-all hover:brightness-110"
                 >
                   <FiCheck size={14} />

@@ -1,10 +1,11 @@
 "use client"
 
 import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 import { motion as motionElement } from 'framer-motion';
 import { FiUserCheck, FiBriefcase, FiAward, FiClock, FiSend } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
+import toast, { Toaster } from 'react-hot-toast'; // ✅ add this
 
 export default function ApplyAsTrainer() {
   const [isRequested, setIsRequested] = useState(null)
@@ -17,8 +18,6 @@ export default function ApplyAsTrainer() {
   const { data: session } = useSession()
   const user = session?.user
   const role = user?.role
-  // console.log(user);
-  
 
   useEffect(() => {
     const requestCheck = async () => {
@@ -29,10 +28,9 @@ export default function ApplyAsTrainer() {
     requestCheck()
   }, [user?.email])
 
-  
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true); // ✅ moved to top
 
     const formData = {
       yearsExperience,
@@ -44,32 +42,32 @@ export default function ApplyAsTrainer() {
       status: 'pending'
     };
 
-    // console.log("Trainer Application:", formData);
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer`, {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-      },
-      body: JSON.stringify(formData)
-    })
-    const data = await res.json()
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(formData)
+      });
 
+      const data = await res.json();
 
-
-
-
-
-    setIsSubmitting(true);
-
-    // Simulate backend payload synchronization pipeline
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setApplicationStatus("pending");
-    }, 1500);
+      if (data?.insertedId) {
+        toast.success('Application submitted successfully! 🎉'); // ✅ toast here
+        setIsRequested({ status: 'pending' }); // ✅ update UI without reload
+      } else {
+        toast.error('Something went wrong. Please try again.');
+      }
+    } catch (err) {
+      toast.error('Network error. Please try again.');
+    } finally {
+      setIsSubmitting(false); // ✅ always reset
+    }
   };
 
   return (
     <div className="max-w-2xl space-y-6">
+      <Toaster position="top-right" /> {/* ✅ add this */}
+
       {/* Page Header */}
       <div className="border-b border-purple-500/10 pb-6">
         <h1 className="text-4xl font-black tracking-[.12em] bg-gradient-to-r from-white via-purple-200 to-purple-400 bg-clip-text text-transparent uppercase" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}>
@@ -82,7 +80,6 @@ export default function ApplyAsTrainer() {
 
       <AnimatePresence mode="wait">
         {isRequested?.status === 'pending' ? (
-          /* Submission Screen Frame */
           <motionElement.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -103,13 +100,11 @@ export default function ApplyAsTrainer() {
             </div>
           </motionElement.div>
         ) : (
-          /* Active Interactive Application Form */
           <motionElement.form
             layout
             onSubmit={handleSubmit}
             className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-6 md:p-8 space-y-5 shadow-[0_4px_30px_rgba(0,0,0,0.3)]"
           >
-            {/* Input Field: Experience Metric */}
             <div className="space-y-1.5">
               <label className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-1.5">
                 <FiBriefcase className="text-purple-400" /> Professional Experience (Years)
@@ -126,7 +121,6 @@ export default function ApplyAsTrainer() {
               />
             </div>
 
-            {/* Selector Field: Core Discipline Specialty */}
             <div className="space-y-1.5">
               <label className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-1.5">
                 <FiAward className="text-purple-400" /> Core Coaching Discipline
@@ -153,7 +147,6 @@ export default function ApplyAsTrainer() {
               </div>
             </div>
 
-            {/* Textarea Field: Biography Statement */}
             <div className="space-y-1.5">
               <label className="text-[10px] uppercase font-bold text-white/40 tracking-widest flex items-center gap-1.5">
                 Professional Bio & Strategy Credentials
@@ -168,7 +161,6 @@ export default function ApplyAsTrainer() {
               />
             </div>
 
-            {/* Action Submit Dispatch Button */}
             <button
               type="submit"
               disabled={isSubmitting}
