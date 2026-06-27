@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { uploadToImgBB } from '@/lib/iamgeUpload/imageUpload';
 import { useRouter } from 'next/navigation';
+import { FaGoogle } from 'react-icons/fa';
 
 export default function SignupPage() {
   const router = useRouter();
@@ -102,6 +103,20 @@ export default function SignupPage() {
     // Ensure state cleanup before pushing routes
     await authClient.signOut();
     router.push('/login');
+  };
+
+  const handleGoogleSignUp = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+      // Ensure the user is redirected back to your app after Google login
+      callbackURL: "/login",
+      dontNavigate: false, // Set to true only if you want to handle the window redirect manually
+      query: {
+        prompt: "select_account"
+      }
+    });
+    await authClient.signOut();
+
   };
 
   const isSubmitting = uploading || loading;
@@ -299,6 +314,27 @@ export default function SignupPage() {
             </motion.button>
 
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-purple-500/15" />
+            <span className="text-white/25 text-[11px] font-semibold uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-purple-500/15" />
+          </div>
+
+          {/* Google Sign Up Button */}
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            type="button"
+            onClick={handleGoogleSignUp}
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white/5 border border-purple-500/20 hover:border-purple-500/40 hover:bg-white/8 text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-all duration-200"
+          >
+            {/* Google "G" SVG logo */}
+            <FaGoogle />
+
+            Continue with Google
+          </motion.button>
 
           {/* Footer */}
           <p className="text-center text-sm text-white/30 mt-6">

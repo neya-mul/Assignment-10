@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
+import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
@@ -38,6 +39,16 @@ export default function LoginPage() {
     }
 
     router.push('/');
+  };
+
+  const handleGoogleSignIn = async () => {
+    await authClient.signIn.social({
+      provider: "google",
+    });
+    router.push('/');
+
+
+    // TODO: add Google OAuth functionality
   };
 
   return (
@@ -149,6 +160,25 @@ export default function LoginPage() {
               {loading ? '⟳  Signing In...' : 'Sign In →'}
             </motion.button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-purple-500/15" />
+            <span className="text-white/25 text-[11px] font-semibold uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-purple-500/15" />
+          </div>
+
+          {/* Google Sign In Button */}
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            type="button"
+            onClick={handleGoogleSignIn}
+            className="w-full flex items-center justify-center gap-3 py-3.5 rounded-xl bg-white/5 border border-purple-500/20 hover:border-purple-500/40 hover:bg-white/8 text-white/80 hover:text-white text-sm font-semibold tracking-wide transition-all duration-200"
+          >
+            <FcGoogle size={18} />
+            Continue with Google
+          </motion.button>
 
           {/* Footer */}
           <p className="text-center text-sm text-white/30 mt-6">

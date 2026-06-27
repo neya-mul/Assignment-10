@@ -6,6 +6,12 @@ const client = new MongoClient(process.env.MONGO_URI);
 const db = client.db('fitness-cafe');
 
 export const auth = betterAuth({
+   socialProviders: {
+        google: { 
+            clientId: process.env.GOOGLE_CLIENT_ID , 
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET, 
+        }, 
+    },
   emailAndPassword: {
     enabled: true,
   },
