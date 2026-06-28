@@ -1,12 +1,6 @@
-/** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    serverComponentsExternalPackages: ['@better-auth/kysely-adapter']
-  },
-  /* config options here */
   reactCompiler: true,
-
-
+  serverExternalPackages: ['@better-auth/kysely-adapter'], // moved out of experimental
 };
 
 export default nextConfig;
