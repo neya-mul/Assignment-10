@@ -8,7 +8,6 @@ export default function ForumDetailsPage({ forum }) {
     const { data: session } = useSession();
     const user = session?.user;
 
-    // 🎯 Likes এবং Dislikes স্টেট (ধরে নেওয়া হচ্ছে ব্যাকএন্ডে দুটিই অ্যারে)
     const [likes, setLikes] = useState(forum?.likes || []);
     const [dislikes, setDislikes] = useState(forum?.dislikes || []);
     const comments = forum?.comments || [];
@@ -78,7 +77,7 @@ export default function ForumDetailsPage({ forum }) {
                         <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
                             {forum?.category || "Community"}
                         </span>
-                        <span className="text-xs text-white/30 font-mono">Posted by {forum?.authorName || "Anonymous"}</span>
+                        <span className="text-xs text-white/30 font-mono">Posted by {forum?.userName || "Anonymous"}</span>
                     </div>
 
                     <h1 className="text-2xl sm:text-4xl font-black tracking-wide text-white uppercase" style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}>
