@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiFileText, FiImage, FiCpu, FiMessageSquare } from 'react-icons/fi';
 import { uploadToImgBB } from '@/lib/iamgeUpload/imageUpload';
 import { useSession } from '@/lib/auth-client';
+import { getToken } from '@/lib/verifyToken';
 
 export default function AddForumPost() {
   const { data: session } = useSession()
@@ -15,6 +16,7 @@ export default function AddForumPost() {
 
   
   const handleSubmit = async (e) => {
+    const token= getToken()
     e.preventDefault();
 
     if (!imageFile) {
@@ -42,7 +44,8 @@ export default function AddForumPost() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`, {
         method: 'POST',
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          authorization :  `Bearer ${token}`
         },
         body: JSON.stringify(forumPost)
       })

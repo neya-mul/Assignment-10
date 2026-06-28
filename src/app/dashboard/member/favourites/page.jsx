@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FiHeart, FiTrash2, FiUser, FiInfo } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
 import toast from 'react-hot-toast';
+import { getToken } from '@/lib/verifyToken';
 
 export default function FavoriteClasses() {
   const [favorites, setFavorites] = useState([]);
@@ -15,7 +16,7 @@ export default function FavoriteClasses() {
   // Fetch bookmarks when user details change
   useEffect(() => {
     if (!user?.id) return;
-    
+
     const favouriteFunction = async () => {
       try {
         const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`);
@@ -30,25 +31,27 @@ export default function FavoriteClasses() {
 
   // ── FIX: Wired up payload variables and dynamic state filter updates ──
   const handleRemoveFavorite = async (classId) => {
+    const token = await getToken()
     if (!user?.id || !classId) return;
 
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favorites`, {
         method: 'DELETE',
         headers: {
-          'content-type': 'application/json'
+          'content-type': 'application/json',
+          authorization: `Bearer ${token}`
         },
-        body: JSON.stringify({ 
-          classId: classId, 
-          userId: user?.id 
+        body: JSON.stringify({
+          classId: classId,
+          userId: user?.id
         })
       });
-      
+
       const data = await res.json();
 
       if (data.success || data.deletedCount > 0) {
         setFavorites((prev) => prev.filter(item => (item.classId !== classId && item._id !== classId)));
-        
+
         // Show notification toast
         setToastMessage('Removed from your favorites array.');
         setTimeout(() => setToastMessage(''), 3000);

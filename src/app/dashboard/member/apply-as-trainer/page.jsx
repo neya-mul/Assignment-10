@@ -4,8 +4,9 @@ import React, { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { motion as motionElement } from 'framer-motion';
 import { FiUserCheck, FiBriefcase, FiAward, FiClock, FiSend } from 'react-icons/fi';
-import { useSession } from '@/lib/auth-client';
+import { authClient, useSession } from '@/lib/auth-client';
 import toast, { Toaster } from 'react-hot-toast'; // ✅ add this
+import { getToken } from '@/lib/verifyToken';
 
 export default function ApplyAsTrainer() {
   const [isRequested, setIsRequested] = useState(null)
@@ -19,6 +20,7 @@ export default function ApplyAsTrainer() {
   const user = session?.user
   const role = user?.role
 
+
   useEffect(() => {
     const requestCheck = async () => {
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer/${user?.email}`)
@@ -29,8 +31,11 @@ export default function ApplyAsTrainer() {
   }, [user?.email])
 
   const handleSubmit = async (e) => {
+    const token = await getToken()
+    console.log(token);
+
     e.preventDefault();
-    setIsSubmitting(true); // ✅ moved to top
+    setIsSubmitting(true);
 
     const formData = {
       yearsExperience,
@@ -45,7 +50,7 @@ export default function ApplyAsTrainer() {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}apply-as-trainer`, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', authorization: `Bearer ${token}` },
         body: JSON.stringify(formData)
       });
 

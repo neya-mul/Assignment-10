@@ -2,6 +2,7 @@
 
 import { useSession } from "@/lib/auth-client";
 import { uploadToImgBB } from "@/lib/iamgeUpload/imageUpload";
+import { getToken } from "@/lib/verifyToken";
 import { toast } from "@heroui/react";
 import React, { useState } from "react";
 import {
@@ -31,6 +32,7 @@ export default function AddClass() {
 
 
   const handleSubmit = async (e) => {
+    const token = getToken()
     e.preventDefault()
     try {
       let imageUrl = "";
@@ -57,6 +59,7 @@ export default function AddClass() {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
+          authorization : `Bearer ${token}`
         },
         body: JSON.stringify(classData)
       })
