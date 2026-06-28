@@ -73,7 +73,7 @@ const AdminClassCard = ({ c }) => {
   };
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
+    const confirmed = toast(
       'Are you sure you want to delete this class?'
     );
 
