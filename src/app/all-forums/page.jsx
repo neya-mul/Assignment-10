@@ -3,9 +3,7 @@ import React from 'react';
 import { FiSearch, FiLayers, FiMessageSquare } from 'react-icons/fi';
 
 export default async function AllForums() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`, {
-    next: { revalidate: 60 } // Keeps page fast with static regeneration every 60s
-  });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts`);
   const forums = await res.json();
   // forums.reverse()
 
