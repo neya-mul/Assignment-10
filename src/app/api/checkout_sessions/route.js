@@ -8,19 +8,7 @@ export async function POST(req) {
     const origin = headersList.get('origin')
 
     const body = await req.json();
-    const { classId, className, trainerName, trainerId, price, scheduleTime, userEmail, userName } = body;
-    const data = {
-      classId,
-      className,
-      scheduleTime,
-      trainerName,
-      trainerId,
-      price,
-      userEmail,
-      userName,
-
-    }
-
+    const { classId, className, trainerName, trainerId, price, scheduleTime, userEmail, userName, userId } = body;
 
     if (!price) {
       return NextResponse.json({ error: 'Price is required.' }, { status: 400 })
@@ -53,27 +41,19 @@ export async function POST(req) {
       mode: 'payment',
       success_url: `${origin}/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/classes/${classId}`,
+      
       metadata: {
-        classId: classId,
-        buyerName: userName || "Anonymous",
-        buyerEmail: userEmail || "No Email"
+        classId: classId || "",
+        className: className || "",
+        scheduleTime: scheduleTime || "",
+        trainerName: trainerName || "",
+        trainerId: trainerId || "",
+        price: price.toString(),
+        userEmail: userEmail || "",
+        userName: userName || "",
+        userId: userId || ""
       }
     });
-
-
-    console.log(session);
-
-    if (session.url) {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-booked-classes`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
-      })
-      res.json()
-    }
-
 
     return NextResponse.json({ url: session.url })
   } catch (err) {

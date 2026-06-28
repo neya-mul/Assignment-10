@@ -9,7 +9,7 @@ import {
   FiHome, FiGrid, FiUsers, FiLayout
 } from 'react-icons/fi';
 import { authClient } from '@/lib/auth-client';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
 export default function Navbar() {
@@ -39,10 +39,13 @@ export default function Navbar() {
   // Early return safely placed after hooks
   if (pathname.includes('dashboard')) return null;
 
+  const router = useRouter()
+
   const handleLogout = async () => {
     await authClient.signOut();
     setIsOpen(false);
     setDropdownOpen(false);
+    router.push('/login')
   };
 
   const navLinks = [
@@ -181,7 +184,7 @@ export default function Navbar() {
                         <div className="p-2 space-y-1">
                           <Link
                             href={`/dashboard/${user?.role}` || `details/dashboard/${user?.role}`}
-                             onClick={() => setDropdownOpen(false)}
+                            onClick={() => setDropdownOpen(false)}
                             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-200 tracking-wider uppercase"
                           >
                             <FiLayout size={13} className="text-purple-400" />
