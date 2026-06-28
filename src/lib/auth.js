@@ -1,17 +1,18 @@
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "better-auth/adapters/mongodb";
+import { jwt } from "better-auth/plugins";
 
 const client = new MongoClient(process.env.MONGO_URI);
 const db = client.db('fitness-cafe');
 
 export const auth = betterAuth({
-   socialProviders: {
-        google: { 
-            clientId: process.env.GOOGLE_CLIENT_ID , 
-            clientSecret: process.env.GOOGLE_CLIENT_SECRET, 
-        }, 
+  socialProviders: {
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     },
+  },
   emailAndPassword: {
     enabled: true,
   },
@@ -19,17 +20,25 @@ export const auth = betterAuth({
     // Optional: if you don't provide a client, database transactions won't be enabled.
     client
   }),
-  user:{
-    additionalFields:{
-      role:{
-        defaultValue:'member'
+  user: {
+    additionalFields: {
+      role: {
+        defaultValue: 'member'
       },
-      isPro:{
-        defaultValue:false
+      isPro: {
+        defaultValue: false
       },
-       status:{
-        defaultValue:'active'
+      status: {
+        defaultValue: 'active'
       }
     }
-  }
+  },
+  session: {
+    cookieCache: {
+      enabled: true,
+      strategy: 'jwt',
+      maxAge: 60 * 20 * 30,
+    }
+  },
+  plugins: [jwt()],
 });

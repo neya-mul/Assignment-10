@@ -61,6 +61,7 @@ export async function POST(req) {
     });
 
 
+    console.log(session);
 
     if (session.url) {
       const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-booked-classes`, {
