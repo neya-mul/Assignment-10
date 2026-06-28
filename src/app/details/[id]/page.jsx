@@ -36,7 +36,7 @@ const DetailsPage = async ({ params }) => {
   }
 
   return (
-    <div>
+    <div className='py-10'>
       <Details cls={cls[0]} />
     </div>
   );

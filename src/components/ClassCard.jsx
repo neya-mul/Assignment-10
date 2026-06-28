@@ -15,7 +15,7 @@ const ClassCard = ({ cls }) => {
         scale: 1.02,
         boxShadow: '0px 0px 30px rgba(168, 85, 247, 0.15)',
       }}
-      className="relative group rounded-2xl border border-purple-500/10 bg-[#0c091f]/40 backdrop-blur-xl p-5 overflow-hidden flex flex-col justify-between"
+      className="relative group rounded-2xl border border-purple-500/10 bg-[#0c091f]/40 backdrop-blur-xl p-5  overflow-hidden flex flex-col justify-between"
     >
       <div>
         {/* Image */}
