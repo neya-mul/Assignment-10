@@ -5,13 +5,15 @@ import React, { useState } from 'react';
 import { FiThumbsUp, FiThumbsDown, FiMessageSquare, FiTrash2, FiEdit3, FiSend, FiX, FiCheck, FiCornerDownRight } from 'react-icons/fi';
 
 export default function ForumDetailsPage({ forum }) {
+    console.log(forum);
+
     const { data: session } = useSession();
     const user = session?.user;
 
     const [likes, setLikes] = useState(forum?.likes || []);
     const [dislikes, setDislikes] = useState(forum?.dislikes || []);
     const [comments, setComments] = useState(forum?.comments || []);
-    
+
     const [editingCommentId, setEditingCommentId] = useState(null);
     const [editText, setEditText] = useState('');
     const [replyingCommentId, setReplyingCommentId] = useState(null);
@@ -163,6 +165,15 @@ export default function ForumDetailsPage({ forum }) {
             <div className="max-w-4xl mx-auto relative z-10 space-y-8">
                 {/* ── Main Forum Post Block ── */}
                 <div className="bg-[#0e0b1f]/60 backdrop-blur-xl border border-purple-500/10 rounded-2xl p-6 sm:p-8 space-y-5 shadow-xl">
+                    {forum?.image && (
+                        <div className="relative h-64 sm:h-96 w-full overflow-hidden rounded-xl bg-zinc-950">
+                            <img
+                                src={forum.image}
+                                alt={forum.title}
+                                className="w-full h-full object-cover object-center"
+                            />
+                        </div>
+                    )}
                     <div className="flex items-center gap-3">
                         <span className="px-2.5 py-0.5 rounded-lg text-[10px] font-extrabold uppercase tracking-wider bg-purple-500/10 border border-purple-500/20 text-purple-400">
                             {forum?.category || "Community"}
@@ -201,7 +212,7 @@ export default function ForumDetailsPage({ forum }) {
                         {comments.length > 0 ? (
                             comments.map((comment) => (
                                 <div key={comment._id} className="space-y-3">
-                                    
+
                                     {/* ── Parent Comment ── */}
                                     <div className="bg-[#0e0b1f]/30 border border-purple-500/5 rounded-2xl p-4 flex gap-3 transition-all hover:border-purple-500/10">
                                         <div className="w-8 h-8 rounded-full bg-purple-500/10 border border-purple-500/20 shrink-0 flex items-center justify-center text-xs font-bold text-purple-400">
@@ -262,7 +273,6 @@ export default function ForumDetailsPage({ forum }) {
                                                             <span className="text-[9px] text-white/20 font-mono">{reply.createdAt ? new Date(reply.createdAt).toLocaleDateString() : "Just Now"}</span>
                                                         </div>
 
-                                                        {/* 📝 🆕 Reply Edit Condition Render */}
                                                         {editingReplyId === reply._id ? (
                                                             <div className="flex items-center gap-2 pt-1">
                                                                 <input type="text" value={editReplyText} onChange={(e) => setEditReplyText(e.target.value)} className="flex-1 bg-white/5 border border-purple-500/20 rounded-lg px-2.5 py-1 text-xs text-white focus:outline-none focus:border-purple-500" />
