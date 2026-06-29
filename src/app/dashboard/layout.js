@@ -82,7 +82,7 @@ export default function DashboardLayout({ children }) {
               className="w-7 h-7 bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-black text-xs"
               style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
             >
-              S
+              F
             </div>
             <Link href='/'>
               <span 
