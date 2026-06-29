@@ -5,7 +5,6 @@ import { headers } from "next/headers";
 import Link from "next/link";
 
 export default async function MyClasses() {
-  // ১. নেক্সট জেএস রিকোয়েস্টের হেডারগুলো নিয়ে আসা (যার মধ্যে সেশন কুকি/টোকেন আছে)
   const requestHeaders = await headers();
 
   const session = await auth.api.getSession({
