@@ -60,7 +60,7 @@ export default function ForumPostCard({ post }) {
         </div>
 
         {/* 3. Footer Navigation / Action Area */}
-        <div className="pt-4 mt-4 border-t border-zinc-800/60 flex items-center justify-end">
+        <div className="pt-4 mt-4 border-t border-zinc-800/60 flex items-center ">
           <Link
             href={`/forumDetails/${_id}`}
             className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold tracking-wider text-purple-300 uppercase bg-purple-500/10 border border-purple-500/20 rounded-lg group-hover:bg-purple-600 group-hover:text-white group-hover:border-purple-600 transition-all duration-300 ease-in-out"
