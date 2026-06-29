@@ -37,7 +37,9 @@ export default function Navbar() {
   const user = session?.user;
 
   // Early return safely placed after hooks
-  if (pathname.includes('dashboard')) return null;
+  if (pathname.includes('dashboard')) {
+    return null;
+  }
 
   const router = useRouter()
 
