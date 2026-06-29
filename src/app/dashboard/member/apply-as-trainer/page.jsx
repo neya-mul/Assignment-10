@@ -32,7 +32,6 @@ export default function ApplyAsTrainer() {
 
   const handleSubmit = async (e) => {
     const token = await getToken()
-    console.log(token);
 
     e.preventDefault();
     setIsSubmitting(true);

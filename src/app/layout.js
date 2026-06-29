@@ -15,10 +15,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "FitenssCafe",
-  description: "My Website Description",
+  title: "FitnessCafe",
+  icons: {
+    icon: "/logo.png",
+  },
 };
-
 export default function RootLayout({ children }) {
   return (
     <html
@@ -26,8 +27,8 @@ export default function RootLayout({ children }) {
       suppressHydrationWarning
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body 
-      // suppressHydrationWarning
+      <body
+        // suppressHydrationWarning
         className="min-h-full flex flex-col">
         <ClientLayout>
           <Navbar />

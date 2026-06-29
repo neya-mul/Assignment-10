@@ -15,7 +15,6 @@ export default function Transactions() {
     getData()
   }, [])
 
-  console.log(transactions);
 
 
 

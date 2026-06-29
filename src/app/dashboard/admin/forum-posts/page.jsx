@@ -18,7 +18,6 @@ export default function ForumPostManage() {
     getAllPosts()
   },[])
 
-  console.log(posts);
   
 
   const handleDeletePost = async (id, title) => {
