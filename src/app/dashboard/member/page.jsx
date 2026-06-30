@@ -65,6 +65,8 @@ export default function MemberOverview() {
     favouriteFunction();
   }, [user?.id]); // Optimized dependency array to look at ID directly
 
+
+  
   // Mock states reflecting the specified target parameters
  
   // Safely extract initials dynamically

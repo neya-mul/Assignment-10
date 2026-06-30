@@ -1,4 +1,5 @@
 import { auth } from "@/lib/auth";
+import { getToken } from "@/lib/verifyToken";
 import TrainerClassUpdateModal from "@/Modals/TrainerCalssUpdateModal";
 import TrainerDeleteModal from "@/Modals/TrainerDeleteModal";
 import { headers } from "next/headers";
@@ -6,6 +7,9 @@ import Link from "next/link";
 
 export default async function MyClasses() {
   const requestHeaders = await headers();
+  const token =await getToken()
+
+  
 
   const session = await auth.api.getSession({
     headers: requestHeaders,
@@ -13,7 +17,6 @@ export default async function MyClasses() {
 
   const user = session?.user;
 
-  // 🔒 সেশন গার্ড
   if (!user?.id) {
     return (
       <div className="py-20 text-center text-white/40">
@@ -22,13 +25,16 @@ export default async function MyClasses() {
     );
   }
 
-  // ২. fetch-এর ভেতর হেডারগুলো ফরওয়ার্ড করা
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_URL}my-classes/${user?.id}`
+    `${process.env.NEXT_PUBLIC_URL}my-classes/${user?.id}`, {
+    headers: {
+      authorization: `Bearer ${token}`
+    }
+  }
   );
 
-  const myClasses = await res.json(); 
-  
+  const myClasses = await res.json();
+
 
   return (
     <div className="space-y-8 text-white px-4 sm:px-6 lg:px-0">
@@ -114,7 +120,7 @@ export default async function MyClasses() {
           ) : (
             // যদি ব্যাকএন্ড থেকে এখনো 'Unauthorized' আসে, তবে অ্যাপ ক্র্যাশ না করে এই সুন্দর মেসেজটি দেখাবে
             <div className="py-16 text-center text-red-400/80 text-sm font-semibold px-4">
-               {myClasses?.message || "Failed to load classes due to authentication issue."}
+              {myClasses?.message || "Failed to load classes due to authentication issue."}
             </div>
           )}
 
