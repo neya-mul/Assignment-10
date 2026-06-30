@@ -11,11 +11,7 @@ export default async function ForumDetails({ params }) {
     })
 
     // Server-side data fetch
-    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts/${id}`, {
-        headers: {
-            authorization: `Bearer ${token}`
-        }
-    });
+    const res = await fetch(`${process.env.NEXT_PUBLIC_URL}forum-posts/${id}`);
     const forumData = await res.json();
     const forum = forumData[0];
 
