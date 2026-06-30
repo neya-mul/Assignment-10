@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiSliders, FiUsers, FiAward, FiMail, FiZap, FiTarget, FiLoader } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
 import toast from 'react-hot-toast';
+import { getToken } from '@/lib/verifyToken';
 
 export default function TrainerOverview() {
   const { data: session } = useSession();
@@ -24,8 +25,13 @@ export default function TrainerOverview() {
     if (!user?.id) return;
 
     const fetchTrainerClasses = async () => {
+      const token = await getToken()
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-classes/${user.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}my-classes/${user.id}`, {
+          headers:{
+            authorization : `Bearer ${token}`
+          }
+        });
         if (res.ok) {
           const data = await res.json();
           setMyClasses(data);

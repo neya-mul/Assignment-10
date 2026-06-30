@@ -55,7 +55,11 @@ export default function MemberOverview() {
 
     const favouriteFunction = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`, {
+          headers:{
+            authorization:`Bearer ${token}`
+          }
+        });
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
