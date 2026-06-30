@@ -12,7 +12,6 @@ export default function FavoriteClasses() {
   const { data: session } = useSession();
   const user = session?.user;
   const [toastMessage, setToastMessage] = useState('');
-  const [token, setToken] = useState('')
 
   
   // Fetch bookmarks when user details change
@@ -20,8 +19,13 @@ export default function FavoriteClasses() {
     if (!user?.id) return;
 
     const favouriteFunction = async () => {
+      const token = await getToken()
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`, {
+          headers:{
+            authorization:`Bearer ${token}`
+          }
+        });
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
