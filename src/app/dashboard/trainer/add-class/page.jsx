@@ -67,11 +67,9 @@ export default function AddClass() {
       if (data.insertedId) {
         window.location.reload()
       }
-      console.log(data)
 
       // save classData to database
     } catch (error) {
-      console.error(error);
     }
     toast('Class added')
 

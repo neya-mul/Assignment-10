@@ -24,7 +24,7 @@ export default function AppliedTrainers() {
         const data = await res.json();
         setApplicants(data);
       } catch (error) {
-        console.error("Failed to fetch applications:", error);
+        toast.error("Failed to fetch applications:", error);
       }
     };
     getAllApplicants();
@@ -56,7 +56,7 @@ export default function AppliedTrainers() {
         triggerToast(`Error: ${err.error || 'Could not upgrade user.'}`);
       }
     } catch (error) {
-      console.error(error);
+      toast.error(error);
       triggerToast("Network communication fault during approval.");
     }
   };
@@ -77,7 +77,7 @@ export default function AppliedTrainers() {
         triggerToast("Failed to safely eliminate pipeline record entry.");
       }
     } catch (error) {
-      console.error(error);
+      toast.error(error);
       triggerToast("Network execution fault during rejection.");
     }
   };

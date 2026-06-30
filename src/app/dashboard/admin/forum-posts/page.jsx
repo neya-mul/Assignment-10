@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FiTrash2, FiMessageSquare, FiUser, FiInfo } from 'react-icons/fi';
+import toast from 'react-hot-toast';
 
 export default function ForumPostManage() {
   const [posts, setPosts] = useState([]);
@@ -34,8 +35,8 @@ export default function ForumPostManage() {
         alert("Failed to delete the post from the server.");
       }
     } catch (error) {
-      console.error("Error deleting post:", error);
-      alert("Network communication fault during deletion.");
+      toast.error("Error deleting post:", error);
+      toast("Network communication fault during deletion.");
     }
   };
 

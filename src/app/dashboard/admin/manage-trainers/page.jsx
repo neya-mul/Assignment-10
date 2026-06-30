@@ -23,7 +23,7 @@ export default function ManageTrainers() {
         const onlyTrainers = allUsers.filter(user => user.role === 'trainer');
         setTrainers(onlyTrainers);
       } catch (error) {
-        console.error("Failed to load trainers:", error);
+        toast.error("Failed to load trainers:", error);
       }
     };
     fetchTrainers();
@@ -54,7 +54,7 @@ export default function ManageTrainers() {
         triggerToast("Failed to demote trainer due to a server error.");
       }
     } catch (error) {
-      console.error("Demotion error:", error);
+      toast.error("Demotion error:", error);
       triggerToast("Network communication fault during demotion.");
     }
   };

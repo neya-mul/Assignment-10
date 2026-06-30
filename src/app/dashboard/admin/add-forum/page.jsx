@@ -56,7 +56,6 @@ export default function AddForumPost() {
       setStatusMessage("Post created successfully!");
 
     } catch (error) {
-      // console.error(error);
       setStatusMessage("Upload failed!");
     } finally {
       setIsUploading(false);

@@ -43,7 +43,6 @@ export default async function SuccessPage({ searchParams }) {
       
       
     } catch (err) {
-      console.error("Stripe verification or DB sync failed:", err);
     }
   }
 

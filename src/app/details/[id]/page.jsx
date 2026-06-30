@@ -11,6 +11,9 @@ const DetailsPage = async ({ params }) => {
   headers: await headers()
 });
 
+
+console.log(token);
+
   const { id } = await params;
   
   // 1. Added cache: 'no-store' for authenticated requests
