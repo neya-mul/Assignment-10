@@ -12,7 +12,9 @@ export default function FavoriteClasses() {
   const { data: session } = useSession();
   const user = session?.user;
   const [toastMessage, setToastMessage] = useState('');
+  const [token, setToken] = useState('')
 
+  
   // Fetch bookmarks when user details change
   useEffect(() => {
     if (!user?.id) return;

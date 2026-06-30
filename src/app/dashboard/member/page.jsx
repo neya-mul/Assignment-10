@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiCalendar, FiHeart, FiUser, FiMail, FiShield, FiAlertTriangle, FiCheckCircle, FiClock, FiCornerDownRight } from 'react-icons/fi';
 import { useSession } from '@/lib/auth-client';
 import toast from 'react-hot-toast';
+import { getToken } from '@/lib/verifyToken';
 
 export default function MemberOverview() {
   const [favorites, setFavorites] = useState([]);
@@ -17,9 +18,14 @@ export default function MemberOverview() {
 
   useEffect(() => {
     const classes = async () => {
+      const token = await getToken()
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_URL}my-booked-classes/${user?.email}`
+          `${process.env.NEXT_PUBLIC_URL}my-booked-classes/${user?.email}`, {
+            headers:{
+              authorization:`Bearer ${token}`
+            }
+          }
         );
 
         const data = await res.json();
