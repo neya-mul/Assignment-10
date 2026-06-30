@@ -21,11 +21,7 @@ export default function FavoriteClasses() {
     const favouriteFunction = async () => {
       const token = await getToken()
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`, {
-          headers:{
-            authorization:`Bearer ${token}`
-          }
-        });
+        const res = await fetch(`${process.env.NEXT_PUBLIC_URL}favourites/${user?.id}`);
         const data = await res.json();
         setFavorites(data);
       } catch (err) {
