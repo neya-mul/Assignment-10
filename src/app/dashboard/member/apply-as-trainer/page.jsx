@@ -31,9 +31,10 @@ export default function ApplyAsTrainer() {
   }, [user?.email])
 
   const handleSubmit = async (e) => {
+        e.preventDefault();
+
     const token = await getToken()
 
-    e.preventDefault();
     setIsSubmitting(true);
 
     const formData = {
@@ -56,8 +57,8 @@ export default function ApplyAsTrainer() {
       const data = await res.json();
 
       if (data?.insertedId) {
-        toast.success('Application submitted successfully! 🎉'); // ✅ toast here
-        setIsRequested({ status: 'pending' }); // ✅ update UI without reload
+        toast.success('Application submitted successfully! 🎉'); 
+        setIsRequested({ status: 'pending' }); 
       } else {
         toast.error('Something went wrong. Please try again.');
       }
