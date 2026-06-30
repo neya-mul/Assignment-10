@@ -1,11 +1,15 @@
 
 // import React, { useState } from 'react';
 import AdminClassCard from '@/components/AdminClassCard';
-import { motion, AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'framer-motion';
 
 export default async function ManageClasses() {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_URL}admin-classes`)
-  const classes = await res.json()
+const res = await fetch(
+  `${process.env.NEXT_PUBLIC_URL}admin-classes`,
+  {
+    cache: 'no-store',
+  }
+);  const classes = await res.json()
   
  
 

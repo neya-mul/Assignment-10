@@ -12,6 +12,8 @@ import {
 } from 'react-icons/fi';
 
 const AdminClassCard = ({ c }) => {
+
+  
   const handleApprove = async () => {
     try {
       const res = await fetch(
