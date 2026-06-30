@@ -19,7 +19,9 @@ console.log(token);
   // 1. Added cache: 'no-store' for authenticated requests
   const res = await fetch(`${process.env.NEXT_PUBLIC_URL}all-classes/${id}`, {
     cache: 'no-store', 
-   
+    headers: {
+      authorization: `Bearer ${token}`
+    }
   });
 
   // 2. Added basic error handling

@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import { FiThumbsUp, FiThumbsDown, FiMessageSquare, FiTrash2, FiEdit3, FiSend, FiX, FiCheck, FiCornerDownRight } from 'react-icons/fi';
 
 export default function ForumDetailsPage({ forum }) {
-    console.log(forum);
 
     const { data: session } = useSession();
     const user = session?.user;
