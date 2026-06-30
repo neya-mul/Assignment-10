@@ -33,6 +33,9 @@ export default async function BookedClasses() {
   })
   const myClass = await res.json()
 
+  console.log(myClass);
+  
+
 
 
   const emptyState = (
