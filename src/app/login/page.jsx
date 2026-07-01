@@ -75,7 +75,7 @@ export default function LoginPage() {
               className="w-10 h-10 bg-gradient-to-br from-violet-600 to-purple-400 flex items-center justify-center text-white font-black text-xl mx-auto mb-4"
               style={{ clipPath: 'polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%)' }}
             >
-              S
+              F
             </div>
             <h2
               className="text-3xl font-black tracking-[.12em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent uppercase mb-1"
@@ -83,7 +83,7 @@ export default function LoginPage() {
             >
               Welcome Back
             </h2>
-            <p className="text-white/40 text-sm">Stride Today. Strong Tomorrow.</p>
+            <p className="text-white/40 text-sm">FitnessCafe</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

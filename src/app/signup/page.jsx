@@ -150,7 +150,6 @@ export default function SignupPage() {
             >
               Join FitnessCafe
             </h2>
-            <p className="text-white/40 text-sm">Stride Today. Strong Tomorrow.</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-3">
