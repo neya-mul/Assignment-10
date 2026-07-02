@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-// import { usePathname } from 'navigation';
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
 import Image from 'next/image';
 import logo from '../../public/logo.png';
@@ -10,7 +9,6 @@ import { usePathname } from 'next/navigation';
 export default function Footer() {
   const footerLink = usePathname();
   
-  // Dashboard রুটগুলোতে ফুটার হাইড রাখার লজিক
   if (footerLink?.includes('dashboard')) {
     return null;
   }
@@ -18,15 +16,12 @@ export default function Footer() {
   return (
     <footer className="relative bg-[#050816] border-t border-purple-500/10 overflow-hidden select-none">
       
-      {/* 🔮 Background Ambient Radial Glow */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-2/3 h-32 bg-purple-500/5 blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 py-12 sm:px-6 lg:px-8 relative z-10">
         
-        {/* ── Top Section: Brand & Nav Links ── */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 border-b border-purple-500/5 pb-8">
           
-          {/* Column 1: Branding & Logo */}
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center">
               <Link href="/" className="hover:opacity-90 transition-opacity active:scale-98">
@@ -45,7 +40,6 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Column 2: Quick Links */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-[3px] text-purple-400 mb-4">Architecture</h4>
             <ul className="space-y-2.5 text-sm text-white/50">
@@ -55,7 +49,6 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Portal Links */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-[3px] text-purple-400 mb-4">Portal System</h4>
             <ul className="space-y-2.5 text-sm text-white/50">
@@ -67,15 +60,25 @@ export default function Footer() {
 
         </div>
 
-        {/* ── Bottom Section: Copyright & Social Arrays ── */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
           
-          {/* Cyberpunk Style System Log Copyright */}
-          <p className="text-[11px] font-mono text-white/30 tracking-widest uppercase">
-            &copy; {new Date().getFullYear()} FITNESS CAFÉ // SYS.LOC.BD // ALL RIGHTS RESERVED.
-          </p>
+          <div className="flex flex-col items-center sm:items-start gap-1">
+            <p className="text-[11px] font-mono text-white/30 tracking-widest uppercase">
+              &copy; {new Date().getFullYear()} FITNESS CAFÉ // SYS.LOC.BD // ALL RIGHTS RESERVED.
+            </p>
+            <p className="text-[11px] font-mono text-white/30 tracking-widest uppercase">
+              CREATED BY{" "}
+              <a
+                href="https://neyamulfolio.vercel.app/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-purple-400 hover:text-purple-300 transition-colors underline underline-offset-2"
+              >
+                NEYAMUL ISLAM
+              </a>
+            </p>
+          </div>
           
-          {/* Modern Tech Box Social Buttons */}
           <div className="flex space-x-3">
             <a 
               href="#" 
