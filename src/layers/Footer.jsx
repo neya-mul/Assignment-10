@@ -2,8 +2,6 @@
 
 import Link from 'next/link';
 import { FaGithub, FaTwitter, FaLinkedin } from 'react-icons/fa';
-import Image from 'next/image';
-import logo from '../../public/logo.png';
 import { usePathname } from 'next/navigation';
 
 export default function Footer() {

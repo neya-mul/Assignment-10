@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import logo from '../../public/logo.png'
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import {

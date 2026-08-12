@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "FitnessCafe",
   icons: {
-    icon: "/logo.png",
+    icon: "/favicon.png",
   },
 };
 export default function RootLayout({ children }) {
