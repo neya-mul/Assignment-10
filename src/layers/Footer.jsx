@@ -24,16 +24,14 @@ export default function Footer() {
           
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center">
-              <Link href="/" className="hover:opacity-90 transition-opacity active:scale-98">
-                <Image 
-                  src={logo} 
-                  alt="Fitness Café Logo" 
-                  width={140} 
-                  height={45} 
-                  className="object-contain"
-                  priority 
-                />
-              </Link>
+               <Link href='/'>
+              <span 
+                className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
+                style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
+              >
+                FitnessCafe
+              </span>
+            </Link>
             </div>
             <p className="text-sm text-white/40 max-w-sm leading-relaxed">
               Architecting elite training frameworks. Step into the next generation of performance tracking and premium fitness sandbox experiences.
