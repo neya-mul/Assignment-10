@@ -64,13 +64,13 @@ export default function Navbar() {
     <nav className="fixed top-0 left-0 right-0 z-50 w-full transition-all duration-500 ease-in-out">
       {/* Dynamic Background: 
         - Transparent when at the top (over the banner)
-        - Fades smoothly into deep dark purple/black color on scroll
+        - Stays transparent on scroll too, with a subtle blur for legibility
       */}
       <div
         className={`
           transition-all duration-500 ease-in-out border-b
           ${isScrolled
-            ? 'bg-[#050816] bg-gradient-to-b from-[#1e0b3a]/40 to-transparent backdrop-blur-xl border-purple-500/15 shadow-[0_10px_40px_rgba(5,8,22,0.8)] h-[72px]'
+            ? 'bg-transparent backdrop-blur-xl border-purple-500/15 shadow-[0_10px_40px_rgba(5,8,22,0.35)] h-[72px]'
             : 'bg-transparent border-transparent h-[80px]'
           }
         `}
@@ -78,33 +78,14 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
           <div className="flex items-center justify-between h-full">
 
-
-
-
-
             {/* ── Logo ── */}
-            {/* ── Logo ── */}
-            <Link href="/" className="flex items-center gap-2 flex-shrink-0 select-none group">
-              {/* The Image Container - We use overflow-visible so the scaled-up logo can breathe */}
-              <div className="relative w-16 h-14 overflow-visible flex items-center justify-center">
-                <Image
-                  src={logo}
-                  alt="FitnessCafe Logo"
-                  fill
-                  priority
-                  sizes="120px"
-                  /* scale-150 or scale-[1.75] forces the graphic out of its small bounding box */
-                  className="object-contain scale-[1.75] transform transition-transform duration-300 group-hover:scale-[1.85]"
-                />
-              </div>
-
-              {/* The Text Brand Typography */}
-              {/* <span
-    className="font-black text-[24px] tracking-[.15em] bg-gradient-to-r from-white via-purple-100 to-violet-400 bg-clip-text text-transparent uppercase transition-all duration-300 group-hover:opacity-95 pl-4"
-    style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
-  >
-    FitnessCafe
-  </span> */}
+            <Link href='/'>
+              <span 
+                className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
+                style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
+              >
+                FitnessCafe
+              </span>
             </Link>
             {/* ── Desktop nav links ── */}
             <div className="hidden md:flex items-center gap-1">
