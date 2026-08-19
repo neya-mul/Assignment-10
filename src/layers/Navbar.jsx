@@ -47,6 +47,7 @@ export default function Navbar() {
     setIsOpen(false);
     setDropdownOpen(false);
     router.push('/login')
+    window.location.reload()
   };
 
   const navLinks = [
@@ -79,7 +80,7 @@ export default function Navbar() {
 
             {/* ── Logo ── */}
             <Link href='/'>
-              <span 
+              <span
                 className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
                 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
               >

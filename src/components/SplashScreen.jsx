@@ -59,7 +59,7 @@ export default function SplashScreen({ onFinish }) {
   }, [onFinish]);
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-[#050816] flex flex-col items-center justify-center overflow-hidden">
+    <div className="fixed inset-0 z-[9999] bg-[#050816] flex flex-col items-center justify-center overflow-hidden px-5">
 
       {/* Background */}
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_60%_at_50%_30%,#1e0b3a_0%,#050816_70%)] pointer-events-none" />
