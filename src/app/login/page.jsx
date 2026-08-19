@@ -40,17 +40,14 @@ export default function LoginPage() {
 
     router.push('/');
   };
+const handleGoogleSignIn = async () => {
+  await authClient.signIn.social({
+    provider: "google",
+    rememberMe: false,
+  });
 
-  const handleGoogleSignIn = async () => {
-    await authClient.signIn.social({
-      provider: "google",
-    });
-    router.push('/');
-
-
-    // TODO: add Google OAuth functionality
-  };
-
+  router.push("/");
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#08060f] px-4 py-14">
 
