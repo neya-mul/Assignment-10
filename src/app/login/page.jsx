@@ -43,7 +43,7 @@ export default function LoginPage() {
 const handleGoogleSignIn = async () => {
   await authClient.signIn.social({
     provider: "google",
-    rememberMe: false,
+    // rememberMe: false,
   });
 
   router.push("/");
