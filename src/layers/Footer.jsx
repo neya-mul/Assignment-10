@@ -22,7 +22,7 @@ export default function Footer() {
           
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center">
-               <Link href='/'>
+               <Link href='/' prefetch={false}>
               <span 
                 className="font-black tracking-[.15em] bg-gradient-to-r from-white to-purple-400 bg-clip-text text-transparent text-lg uppercase"
                 style={{ fontFamily: "'Bebas Neue', Impact, sans-serif" }}
@@ -39,18 +39,18 @@ export default function Footer() {
           <div>
             <h4 className="text-xs font-bold uppercase tracking-[3px] text-purple-400 mb-4">Architecture</h4>
             <ul className="space-y-2.5 text-sm text-white/50">
-              <li><Link href="/classes" className="hover:text-purple-300 transition-colors">All Classes</Link></li>
-              <li><Link href="/trainers" className="hover:text-purple-300 transition-colors">Our Trainers</Link></li>
-              <li><Link href="/favorites" className="hover:text-purple-300 transition-colors">Bookmarks Array</Link></li>
+              <li><Link href="/classes" prefetch={false} className="hover:text-purple-300 transition-colors">All Classes</Link></li>
+              <li><Link href="/trainers" prefetch={false} className="hover:text-purple-300 transition-colors">Our Trainers</Link></li>
+              <li><Link href="/favorites" prefetch={false} className="hover:text-purple-300 transition-colors">Bookmarks Array</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="text-xs font-bold uppercase tracking-[3px] text-purple-400 mb-4">Portal System</h4>
             <ul className="space-y-2.5 text-sm text-white/50">
-              <li><Link href="/login" className="hover:text-purple-300 transition-colors">Client Login</Link></li>
-              <li><Link href="/register" className="hover:text-purple-300 transition-colors">Join Membership</Link></li>
-              <li><Link href="#" className="hover:text-purple-300 transition-colors">Secure Checkout</Link></li>
+              <li><Link href="/login" prefetch={false} className="hover:text-purple-300 transition-colors">Client Login</Link></li>
+              <li><Link href="/register" prefetch={false} className="hover:text-purple-300 transition-colors">Join Membership</Link></li>
+              <li><Link href="#" prefetch={false} className="hover:text-purple-300 transition-colors">Secure Checkout</Link></li>
             </ul>
           </div>
 

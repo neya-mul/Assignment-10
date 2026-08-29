@@ -46,8 +46,7 @@ export default function Navbar() {
     await authClient.signOut();
     setIsOpen(false);
     setDropdownOpen(false);
-    router.push('/login')
-    window.location.reload()
+    router.push('/login');
   };
 
   const navLinks = [
@@ -95,6 +94,7 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={href}
+                    prefetch={false}
                     className={`
                       relative flex items-center gap-2
                       text-[11px] font-bold tracking-[.1em] uppercase
@@ -166,8 +166,9 @@ export default function Navbar() {
                         {/* Actions */}
                         <div className="p-2 space-y-1">
                           <Link
-                            href={`/dashboard/${user?.role}` || `details/dashboard/${user?.role}`}
+                            href={user?.role ? `/dashboard/${user.role}` : '/login'}
                             onClick={() => setDropdownOpen(false)}
+                            prefetch={false}
                             className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[11px] font-bold text-purple-300 bg-purple-500/10 hover:bg-purple-500/20 transition-all duration-200 tracking-wider uppercase"
                           >
                             <FiLayout size={13} className="text-purple-400" />
@@ -193,12 +194,14 @@ export default function Navbar() {
                 <div className="flex items-center gap-2">
                   <Link
                     href="/login"
+                    prefetch={false}
                     className="text-white/60 hover:text-white text-[11px] font-bold tracking-[.1em] uppercase px-4 py-2 rounded-full hover:bg-white/5 transition-all duration-200"
                   >
                     Login
                   </Link>
                   <Link
                     href="/signup"
+                    prefetch={false}
                     className="relative px-5 py-2.5 rounded-full text-white font-bold text-[11px] tracking-[.1em] uppercase overflow-hidden group transition-all duration-300"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-violet-600 to-purple-500 transition-all duration-300" />
@@ -244,6 +247,7 @@ export default function Navbar() {
                   <Link
                     key={href}
                     href={href}
+                    prefetch={false}
                     onClick={() => setIsOpen(false)}
                     className={`
                       flex items-center gap-3 px-4 py-3 rounded-xl
@@ -265,8 +269,9 @@ export default function Navbar() {
               {user ? (
                 <>
                   <Link
-                    href={`dashboard/${user?.role}`}
+                    href={user?.role ? `/dashboard/${user.role}` : '/login'}
                     onClick={() => setIsOpen(false)}
+                    prefetch={false}
                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-[12px] font-bold tracking-[.08em] uppercase text-purple-300 bg-purple-500/10 border border-purple-500/20 hover:bg-purple-500/20 transition-all duration-200"
                   >
                     <FiLayout size={13} className="text-purple-400" />
@@ -303,6 +308,7 @@ export default function Navbar() {
                   <div className="h-px bg-purple-500/10 my-3" />
                   <Link
                     href="/login"
+                    prefetch={false}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-center py-3 rounded-xl text-white/60 text-[12px] font-bold tracking-[.08em] uppercase hover:text-white hover:bg-white/5 transition-all"
                   >
@@ -310,6 +316,7 @@ export default function Navbar() {
                   </Link>
                   <Link
                     href="/signup"
+                    prefetch={false}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-center py-3 rounded-xl bg-gradient-to-r from-violet-600 to-purple-500 text-white font-bold text-[12px] tracking-[.1em] uppercase shadow-[0_4px_15px_rgba(124,58,237,0.3)]"
                   >

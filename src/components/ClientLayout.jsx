@@ -1,21 +1,22 @@
 'use client';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import SplashScreen from "./SplashScreen";
-// import SplashScreen from "@/components/SplashScreen";
 
 export default function ClientLayout({ children }) {
-  const [showSplash, setShowSplash] = useState(true);
+  const [showSplash, setShowSplash] = useState(false);
 
   useEffect(() => {
     const seen = sessionStorage.getItem("splashSeen");
-    if (seen) setShowSplash(false);
+    if (!seen) {
+      setShowSplash(true);
+    }
   }, []);
 
-  const handleFinish = () => {
+  const handleFinish = useCallback(() => {
     sessionStorage.setItem("splashSeen", "true");
     setShowSplash(false);
-  };
+  }, []);
 
   return (
     <>
