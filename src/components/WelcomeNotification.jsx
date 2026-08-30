@@ -133,7 +133,7 @@ export default function WelcomeNotification({
             <span className="font-bold bg-gradient-to-r from-violet-300 via-purple-200 to-white bg-clip-text text-transparent">
               {displayName}
             </span>{" "}
-            👋
+            
           </motion.p>
         </div>
       </motion.div>
