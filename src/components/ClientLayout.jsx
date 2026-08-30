@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import SplashScreen from "./SplashScreen";
+import WelcomeNotificationHost from "./WelcomeNotificationHost";
 
 export default function ClientLayout({ children }) {
   const [showSplash, setShowSplash] = useState(false);
@@ -9,7 +10,8 @@ export default function ClientLayout({ children }) {
   useEffect(() => {
     const seen = sessionStorage.getItem("splashSeen");
     if (!seen) {
-      setShowSplash(true);
+      const timer = setTimeout(() => setShowSplash(true), 0);
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -21,6 +23,7 @@ export default function ClientLayout({ children }) {
   return (
     <>
       {showSplash && <SplashScreen onFinish={handleFinish} />}
+      <WelcomeNotificationHost />
       {children}
     </>
   );

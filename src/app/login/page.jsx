@@ -7,6 +7,7 @@ import { FcGoogle } from 'react-icons/fc';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 import { useRouter } from 'next/navigation';
+import { triggerWelcome, triggerSocialWelcome } from '@/lib/welcome-notification';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,16 +39,22 @@ export default function LoginPage() {
       return;
     }
 
+    // Trigger one-time welcome notification with authenticated user's name
+    const resolvedName = data?.user?.name || formData.email.split('@')[0];
+    triggerWelcome(resolvedName);
+
     router.push('/');
   };
-const handleGoogleSignIn = async () => {
-  await authClient.signIn.social({
-    provider: "google",
-    // rememberMe: false,
-  });
 
-  router.push("/");
-};
+  const handleGoogleSignIn = async () => {
+    triggerSocialWelcome();
+    await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/",
+    });
+
+    router.push("/");
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#08060f] px-4 py-14">
 
@@ -179,7 +186,7 @@ const handleGoogleSignIn = async () => {
 
           {/* Footer */}
           <p className="text-center text-sm text-white/30 mt-6">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link href="/signup" className="text-purple-400 font-semibold hover:text-purple-300 transition-colors">
               Sign up
             </Link>

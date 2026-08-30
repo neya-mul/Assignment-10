@@ -8,6 +8,7 @@ import {
   FiHome, FiGrid, FiUsers, FiLayout
 } from 'react-icons/fi';
 import { authClient } from '@/lib/auth-client';
+import { clearWelcomeTrigger } from '@/lib/welcome-notification';
 import { usePathname, useRouter } from 'next/navigation';
 import Image from 'next/image';
 
@@ -32,6 +33,7 @@ export default function Navbar() {
   }, []);
 
   // Hooks must be called at the top level
+  const router = useRouter();
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
@@ -40,9 +42,8 @@ export default function Navbar() {
     return null;
   }
 
-  const router = useRouter()
-
   const handleLogout = async () => {
+    clearWelcomeTrigger();
     await authClient.signOut();
     setIsOpen(false);
     setDropdownOpen(false);
